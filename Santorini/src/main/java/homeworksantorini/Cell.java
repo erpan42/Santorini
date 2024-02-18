@@ -3,10 +3,21 @@ package homeworksantorini;
 public class Cell {
     private Tower tower;
     private Worker worker;
+    private int x, y; // Coordinates of the cell on the grid
 
-    public Cell() {
+    public Cell(int x, int y) {
+        this.x = x;
+        this.y = y;
         this.tower = new Tower();
-        this.worker = null; // No worker initially
+        this.worker = null;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public boolean hasWorker() {
@@ -32,4 +43,5 @@ public class Cell {
     public Tower getTower() {
         return this.tower;
     }
+
 }

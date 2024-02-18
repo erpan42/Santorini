@@ -10,8 +10,8 @@ public class Player {
     public Player(String id) {
         this.id = id;
         this.workers = new ArrayList<>();
-        this.workers.add(new Worker(this));
-        this.workers.add(new Worker(this));
+        this.workers.add(new Worker(this, null));
+        this.workers.add(new Worker(this, null));
     }
 
     public void moveWorker(Worker worker, Cell toCell) {

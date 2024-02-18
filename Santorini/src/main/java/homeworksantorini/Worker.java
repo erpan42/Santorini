@@ -3,27 +3,29 @@ package homeworksantorini;
 public class Worker {
     private Cell position;
     private Player owner;
+    private Grid grid;
 
-    private static final int MAX_TOWER_LEVEL = 3;
-
-    public Worker(Player owner) {
+    public Worker(Player owner, Grid grid) {
         this.owner = owner;
+        this.grid = grid;
         this.position = null; // No initial position
     }
 
     public void move(Cell toCell) {
-        if (toCell != null && !toCell.hasWorker() && Math.abs(toCell.getTowerLevel() - this.position.getTowerLevel()) <= 1) {
-            this.position.setWorker(null); // Remove worker from current cell
-            this.position = toCell;
-            toCell.setWorker(this);
+        if (grid.isValidMove(this.position, toCell)) {
+            this.position.setWorker(null); // Clear current cell
+            this.position = toCell; // Update position
+            toCell.setWorker(this); // Assign worker to the new cell
         }
     }
 
-    public void build(Cell onCell) {
-        if (onCell != null && !onCell.hasWorker() && onCell.getTowerLevel() < MAX_TOWER_LEVEL) {
-            onCell.getTower().addLevel();
-        } else if (onCell != null && onCell.getTowerLevel() == MAX_TOWER_LEVEL && !onCell.hasDome()) {
-            onCell.getTower().addDome();
+    public void build(Cell targetCell) {
+        if (grid.isValidBuild(this.position, targetCell)) {
+            if (targetCell.getTowerLevel() < Grid.MAX_TOWER_LEVEL) {
+                targetCell.getTower().addLevel();
+            } else if (!targetCell.getTower().hasDome()) {
+                targetCell.getTower().addDome();
+            }
         }
     }
 
@@ -34,7 +36,7 @@ public class Worker {
     public void setPosition(Cell position) {
         this.position = position;
         if (position != null) {
-            position.setWorker(this);
+            position.setWorker(this); // Assign this worker to the cell
         }
     }
 
@@ -42,4 +44,3 @@ public class Worker {
         return this.owner;
     }
 }
-
