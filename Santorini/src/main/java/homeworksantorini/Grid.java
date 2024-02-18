@@ -1,7 +1,7 @@
 package homeworksantorini;
 
 public class Grid {
-    private static final int GRID_SIZE = 5;
+    public static final int GRID_SIZE = 5;
     public static final int MAX_TOWER_LEVEL = 3;
     private Cell[][] cells = new Cell[GRID_SIZE][GRID_SIZE];
 
@@ -37,7 +37,7 @@ public class Grid {
         return true;
     }
 
-    private boolean isAdjacent(Cell cell1, Cell cell2) {
+    public boolean isAdjacent(Cell cell1, Cell cell2) {
         int x1 = cell1.getX(), y1 = cell1.getY();
         int x2 = cell2.getX(), y2 = cell2.getY();
 
