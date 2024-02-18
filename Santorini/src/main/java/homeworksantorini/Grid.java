@@ -22,7 +22,7 @@ public class Grid {
 
     public boolean isValidMove(Cell fromCell, Cell toCell) {
         if (fromCell == null || toCell == null) return false;
-        if (toCell.hasWorker()) return false; // Target cell is occupied
+        if (toCell.hasWorker() || toCell.getTower().hasDome()) return false; // Target cell is occupied or has dome
         if (!isAdjacent(fromCell, toCell)) return false; // Not adjacent
         if (Math.abs(toCell.getTowerLevel() - fromCell.getTowerLevel()) > 1) return false; // Too high to move
 

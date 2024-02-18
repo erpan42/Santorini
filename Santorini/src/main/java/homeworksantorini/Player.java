@@ -6,20 +6,20 @@ import java.util.List;
 public class Player {
     private List<Worker> workers;
     private String id;
-
-    public Player(String id) {
+    
+    public Player(String id, Grid grid) {
         this.id = id;
         this.workers = new ArrayList<>();
-        this.workers.add(new Worker(this, null));
-        this.workers.add(new Worker(this, null));
+        this.workers.add(new Worker(this, grid));
+        this.workers.add(new Worker(this, grid));
     }
 
-    public void moveWorker(Worker worker, Cell toCell) {
-        worker.move(toCell);
+    public boolean moveWorker(Worker worker, Cell toCell) {
+        return worker.move(toCell); // Move the worker
     }
 
-    public void buildWithWorker(Worker worker, Cell onCell) {
-        worker.build(onCell);
+    public boolean buildWithWorker(Worker worker, Cell onCell) {
+        return worker.build(onCell); // Build with the worker
     }
 
     public List<Worker> getWorkers() {

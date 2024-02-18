@@ -7,12 +7,12 @@ public class GameController {
 
     private static final int WIN_CONDITION_TOWER_LEVEL = 3;
 
-    public GameController(String player1Id, String player2Id) {
-        this.grid = new Grid();
+    public GameController(String player1Id, String player2Id, Grid grid) {
+        this.grid = grid;
         this.players = new Player[2];
-        this.players[0] = new Player(player1Id);
-        this.players[1] = new Player(player2Id);
-        this.currentPlayer = this.players[0]; // Player 1 starts
+        this.players[0] = new Player(player1Id, grid);
+        this.players[1] = new Player(player2Id, grid);
+        this.currentPlayer = this.players[0]; // Start with Player 1
     }
 
     public void startGame() {
@@ -58,7 +58,37 @@ public class GameController {
         }
     }
 
+    public void startTurn(Worker worker, Cell targetMoveCell) {
+        if (currentPlayer.getWorkers().contains(worker)) {
+            boolean moveSuccessful = currentPlayer.moveWorker(worker, targetMoveCell);
+            if (moveSuccessful) {
+                System.out.println("Move successful. Now select a cell to build.");
+                // Here, prompt the player to select a cell to build on.
+                // This could be another method call like `startBuild` or handled through user input.
+            } else {
+                System.out.println("Move was not successful. Please try again.");
+                // Handle unsuccessful move (e.g., prompt the player to select a different cell).
+            }
+        } else {
+            System.out.println("This worker does not belong to the current player.");
+        }
+    }
 
+    public void startBuild(Worker worker, Cell targetBuildCell) {
+        if (currentPlayer.getWorkers().contains(worker)) {
+            boolean buildSuccessful = currentPlayer.buildWithWorker(worker, targetBuildCell);
+            if (buildSuccessful) {
+                System.out.println("Build successful. Ending turn.");
+                changeTurn(); // End the current player's turn and switch to the next player
+            } else {
+                System.out.println("Build was not successful. Please try again.");
+                // Handle unsuccessful build (e.g., prompt the player to select a different cell).
+            }
+        } else {
+            System.out.println("This worker does not belong to the current player.");
+        }
+    }
+    
     public boolean checkWinCondition() {
         for (Player player : players) {
             for (Worker worker : player.getWorkers()) {
@@ -71,9 +101,10 @@ public class GameController {
     }
 
     public void changeTurn() {
+        // Toggle between players[0] and players[1]
         currentPlayer = (currentPlayer == players[0]) ? players[1] : players[0];
         System.out.println("It's now Player " + currentPlayer.getId() + "'s turn.");
-    }    
+    }  
 
     public void endGame(Player winner) {
         // Announce the winner
@@ -88,6 +119,5 @@ public class GameController {
         }
     }
 
-    // Additional methods for gameplay, such as moving workers and building towers, can be added here.
 }
 
