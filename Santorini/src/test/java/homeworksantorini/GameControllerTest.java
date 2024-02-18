@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,7 +20,19 @@ public class GameControllerTest {
         player1 = new Player("Player1", grid);
         player2 = new Player("Player2", grid);
         gameController = new GameController("Player1", "Player2", grid);
-        gameController.startGame(); // Initialize the game and place workers
+        
+        // Define named constants for the worker positions
+        final int worker1X = 0;
+        final int worker1Y = 0;
+        final int worker2X = 0;
+        final int worker2Y = 1;
+        final int worker3X = 4;
+        final int worker3Y = 4;
+        final int worker4X = 4;
+        final int worker4Y = 3;
+        
+        gameController.startGameWithPositions(worker1X, worker1Y, worker2X, worker2Y,
+                              worker3X, worker3Y, worker4X, worker4Y); // Initialize the game and place workers
     }
     @Test
     void testGetCurrentPlayerAfterTurn() {
@@ -31,6 +44,24 @@ public class GameControllerTest {
 
         // Now, the current player should be Player 2
         assertEquals(expectedPlayer2, gameController.getCurrentPlayer(), "After a turn, the current player should be Player 2.");
+    }
+
+    @Test
+    void testPlaceWorkerInitial() {
+
+        // Verify that each worker for Player 1 is placed correctly
+        for (int i = 0; i < 2; i++) {
+            Worker worker = gameController.getPlayers()[0].getWorkers().get(i);
+            assertNotNull(worker.getPosition(), "Player 1's worker " + (i + 1) + " should be placed on the grid.");
+        }
+
+        // Verify that each worker for Player 2 is placed correctly
+        for (int i = 0; i < 2; i++) {
+            Worker worker = gameController.getPlayers()[1].getWorkers().get(i);
+            assertNotNull(worker.getPosition(), "Player 2's worker " + (i + 1) + " should be placed on the grid.");
+        }
+
+        // Additional assertions can be added to check the specific positions if needed
     }
 
     @Test

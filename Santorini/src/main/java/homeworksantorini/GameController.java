@@ -7,8 +7,6 @@ public class GameController {
     private Grid grid;
 
     private static final int WIN_CONDITION_TOWER_LEVEL = 3;
-    private static final int[][] INITIAL_POSITIONS_PLAYER1 = {{0, 0}, {1, 1}};
-    private static final int[][] INITIAL_POSITIONS_PLAYER2 = {{3, 3}, {4, 4}};
 
     public GameController(String player1Id, String player2Id, Grid grid) {
         this.grid = grid;
@@ -18,29 +16,37 @@ public class GameController {
         this.currentPlayer = this.players[0]; // Player 1 starts
     }
 
-    public void startGame() {
+    public void startGameWithPositions(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         System.out.println("Starting game and placing workers for both players.");
 
-        placeWorkersInitial(players[0], INITIAL_POSITIONS_PLAYER1);
-        placeWorkersInitial(players[1], INITIAL_POSITIONS_PLAYER2);
+        placeWorkerInitial(players[0], x1, y1, x2, y2);
+        placeWorkerInitial(players[1], x3, y3, x4, y4);
 
         System.out.println("All workers placed. Player " + currentPlayer.getId() + " starts the game.");
     }
 
-    private void placeWorkersInitial(Player player, int[][] initialPositions) {
+    private void placeWorkerInitial(Player player, int x1, int y1, int x2, int y2) {
+        int[][] positions = {{x1, y1}, {x2, y2}};
         for (int i = 0; i < player.getWorkers().size(); i++) {
-            Cell cell = grid.getCell(initialPositions[i][0], initialPositions[i][1]);
-            if (cell != null && !cell.hasWorker()) {
-                Worker worker = player.getWorkers().get(i);
-                worker.setPosition(cell); // Set the worker's position
-                cell.setWorker(worker); // Ensure the cell knows it has this worker
-                System.out.println("Player " + player.getId() + " placed a worker at (" + initialPositions[i][0] + ", " + initialPositions[i][1] + ").");
-            } else {
-                System.out.println("Error: Initial position for worker " + (i + 1) + " of Player " + player.getId() + " is invalid or occupied.");
+            while (true) {
+                Cell cell = grid.getCell(positions[i][0], positions[i][1]);
+                if (cell != null && !cell.hasWorker()) {
+                    Worker worker = player.getWorkers().get(i);
+                    worker.setPosition(cell);
+                    cell.setWorker(worker);
+                    System.out.println("Player " + player.getId() + " placed worker " + (i + 1) +
+                         " at (" + positions[i][0] + ", " + positions[i][1] + ").");
+                    break; // Break the loop if placement is successful
+                } else {
+                    System.out.println("Error: Initial position for worker " + (i + 1) + " of Player " 
+                        + player.getId() + " is invalid or occupied. Please choose a different position.");
+                    // Simulate obtaining new positions (prompt for user input again)
+                    // positions[i][0] = // new x coordinate;
+                    // positions[i][1] = // new y coordinate;
+                }
             }
         }
     }
-
     // This method is called when a player selects a worker and a cell to move to
     // Will be implemented later on via UI or CLI
     public void startTurn(Worker worker, Cell targetMoveCell) {
