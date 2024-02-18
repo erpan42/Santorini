@@ -4,7 +4,7 @@ public class Tower {
     private int level;
     private boolean hasDome;
 
-    private static final int MAX_LEVEL = 3;
+    public static final int MAX_LEVEL = 3;
 
     public Tower() {
         this.level = 0; // Initial level
