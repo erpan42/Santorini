@@ -33,38 +33,32 @@ public class GameController {
         }
     }
 
+    // Method for the current player to select a worker based on coordinates
+    public boolean selectWorkerForCurrentPlayer(int x, int y) {
+        return currentPlayer.selectWorkerByCoordinates(x, y);
+    }
+
+    // Method to handle a move action for the current player's selected worker
     public boolean playerMove(int x, int y) {
-        Cell targetCell = grid.getCell(x, y);
-        if (targetCell == null || targetCell.hasWorker()) {
-            System.out.println("Invalid move. Cell is occupied or out of bounds.");
-            return false;
-        }
-
-        for (Worker worker : currentPlayer.getWorkers()) {
-            if (targetCell.isValidMove(worker.getPosition(), targetCell)) {
-                return currentPlayer.moveWorker(worker, targetCell);
+        if (selectWorkerForCurrentPlayer(x, y)) {
+            Cell targetCell = grid.getCell(x, y);
+            if (targetCell != null && !targetCell.hasWorker()) {
+                return currentPlayer.moveSelectedWorker(targetCell);
             }
+            System.out.println("Invalid move. Please try again.");
         }
-
-        System.out.println("No valid worker found for the move.");
         return false;
     }
 
-    // Method to handle a build action based on user input
+    // Method to handle a build action for the current player's selected worker
     public boolean playerBuild(int x, int y) {
-        Cell targetCell = grid.getCell(x, y);
-        if (targetCell == null || targetCell.hasDome()) {
-            System.out.println("Invalid build. Cell has a dome or is out of bounds.");
-            return false;
-        }
-
-        for (Worker worker : currentPlayer.getWorkers()) {
-            if (targetCell.isValidBuild(worker.getPosition(), targetCell)) {
-                return currentPlayer.buildWithWorker(worker, targetCell);
+        if (selectWorkerForCurrentPlayer(x, y)) {
+            Cell targetCell = grid.getCell(x, y);
+            if (targetCell != null && !targetCell.hasDome()) {
+                return currentPlayer.buildWithSelectedWorker(targetCell);
             }
+            System.out.println("Invalid build. Please try again.");
         }
-
-        System.out.println("No valid worker found for the build.");
         return false;
     }
 

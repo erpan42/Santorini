@@ -7,12 +7,45 @@ public class Player {
     private List<Worker> workers;
     private String id;
     private static final int WIN_CONDITION_TOWER_LEVEL = 3;
+    private Worker selectedWorker;
     
     public Player(String id, Grid grid) {
         this.id = id;
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this));
         this.workers.add(new Worker(this));
+    }
+
+   // Method to select a worker based on coordinates
+    public boolean selectWorkerByCoordinates(int x, int y) {
+        for (Worker worker : workers) {
+            Cell workerCell = worker.getPosition();
+            if (workerCell != null && workerCell.getX() == x && workerCell.getY() == y) {
+                selectedWorker = worker;
+                System.out.println("Worker at (" + x + ", " + y + ") selected.");
+                return true;
+            }
+        }
+        System.out.println("No worker found at the given coordinates.");
+        return false;
+    }
+
+    // Use selectedWorker for move
+    public boolean moveSelectedWorker(Cell toCell) {
+        if (selectedWorker != null) {
+            return moveWorker(selectedWorker, toCell);
+        }
+        System.out.println("No worker selected.");
+        return false;
+    }
+
+    // Use selectedWorker for build
+    public boolean buildWithSelectedWorker(Cell onCell) {
+        if (selectedWorker != null) {
+            return buildWithWorker(selectedWorker, onCell);
+        }
+        System.out.println("No worker selected.");
+        return false;
     }
 
     // Move a worker to a new cell
