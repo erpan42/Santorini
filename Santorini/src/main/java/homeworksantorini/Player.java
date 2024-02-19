@@ -30,24 +30,6 @@ public class Player {
         return false;
     }
 
-    // Use selectedWorker for move
-    public boolean moveSelectedWorker(Cell toCell) {
-        if (selectedWorker != null) {
-            return moveWorker(selectedWorker, toCell);
-        }
-        System.out.println("No worker selected.");
-        return false;
-    }
-
-    // Use selectedWorker for build
-    public boolean buildWithSelectedWorker(Cell onCell) {
-        if (selectedWorker != null) {
-            return buildWithWorker(selectedWorker, onCell);
-        }
-        System.out.println("No worker selected.");
-        return false;
-    }
-
     // Move a worker to a new cell
     public boolean moveWorker(Worker worker, Cell toCell) {
         if (workers.contains(worker) && worker.move(toCell)) {
@@ -95,5 +77,9 @@ public class Player {
     // Method to get the second worker
     public Worker getWorker2() {
         return workers.size() > 1 ? workers.get(1) : null;
+    }
+
+    public Worker getSelectedWorker() {
+        return this.selectedWorker;
     }
 }
