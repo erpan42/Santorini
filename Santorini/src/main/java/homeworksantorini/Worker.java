@@ -27,18 +27,18 @@ public class Worker {
     }
     
 
-    public boolean build(Cell targetCell) {
-        // Check if targetCell is not null before attempting to build
-        if (targetCell == null) {
+    public boolean build(Cell onCell) {
+        // Check if onCell is not null before attempting to build
+        if (onCell == null) {
             System.out.println("Error: The target cell for building is invalid.");
             return false; // Building was unsuccessful because the target cell is invalid
         }
-        
-        if (this.position.isValidBuild(this.position, targetCell)) {
-            if (targetCell.getTowerLevel() < Cell.MAX_TOWER_LEVEL) {
-                targetCell.getTower().addLevel();
-            } else if (!targetCell.getTower().hasDome()) {
-                targetCell.getTower().addDome();
+
+        if (this.position.isValidBuild(this.position, onCell)) {
+            if (onCell.getTowerLevel() < Cell.MAX_TOWER_LEVEL) {
+                onCell.getTower().addLevel();
+            } else if (!onCell.getTower().hasDome()) {
+                onCell.getTower().addDome();
             }
             this.isActive = false; // Worker action done
             return true; // Build was successful
