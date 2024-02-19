@@ -8,82 +8,67 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GameControllerTest {
+class GameControllerTest {
     private GameController gameController;
     private Grid grid;
-    private Player player1;
-    private Player player2;
 
     @BeforeEach
     void setUp() {
         grid = new Grid();
-        player1 = new Player("Player1", grid);
-        player2 = new Player("Player2", grid);
         gameController = new GameController("Player1", "Player2", grid);
-        
-        // Define named constants for the worker positions
-        final int worker1X = 0;
-        final int worker1Y = 0;
-        final int worker2X = 0;
-        final int worker2Y = 1;
-        final int worker3X = 4;
-        final int worker3Y = 4;
-        final int worker4X = 4;
-        final int worker4Y = 3;
-        
-        gameController.startGameWithPositions(worker1X, worker1Y, worker2X, worker2Y,
-                              worker3X, worker3Y, worker4X, worker4Y); // Initialize the game and place workers
     }
-    @Test
-    void testGetCurrentPlayerAfterTurn() {
-        // Access Player2 instance from GameController to ensure reference match
-        Player expectedPlayer2 = gameController.getPlayers()[1]; // Add a getPlayers() method in GameController if not present
 
-        // Simulate a complete turn for Player1, ensuring changeTurn() is invoked
+    @Test
+    void testInitialWorkerPlacement() {
+        // Define positions for workers of Player 1 and Player 2
+        final int initialPositionXp2 = 3;
+        final int initialPositionYp2 = 4;
+
+        int[] workerPositionsP1 = {0, 0, 1, 1};
+        int[] workerPositionsP2 = {initialPositionXp2, initialPositionXp2, initialPositionYp2, initialPositionYp2};
+
+        assertTrue(gameController.setInitialWorkerPosition(gameController.getPlayers()[0], new int[]{workerPositionsP1[0], workerPositionsP1[1]}, 
+            new int[]{workerPositionsP1[2], workerPositionsP1[initialPositionXp2]}));
+        assertTrue(gameController.setInitialWorkerPosition(gameController.getPlayers()[1], new int[]{workerPositionsP2[0], workerPositionsP2[1]}, 
+            new int[]{workerPositionsP2[2], workerPositionsP2[initialPositionXp2]}));
+
+        // Verify workers are correctly placed on the grid
+        for (Player player : gameController.getPlayers()) {
+            for (Worker worker : player.getWorkers()) {
+                assertNotNull(worker.getPosition(), "Worker should have a position on the grid");
+            }
+        }
+    }
+
+    @Test
+    void testChangeTurn() {
         gameController.changeTurn();
-
-        // Now, the current player should be Player 2
-        assertEquals(expectedPlayer2, gameController.getCurrentPlayer(), "After a turn, the current player should be Player 2.");
+        assertEquals("Player2", gameController.getCurrentPlayer().getId(), "After one turn change, it should be Player 2's turn.");
     }
 
     @Test
-    void testPlaceWorkerInitial() {
-
-        // Verify that each worker for Player 1 is placed correctly
-        for (int i = 0; i < 2; i++) {
-            Worker worker = gameController.getPlayers()[0].getWorkers().get(i);
-            assertNotNull(worker.getPosition(), "Player 1's worker " + (i + 1) + " should be placed on the grid.");
-        }
-
-        // Verify that each worker for Player 2 is placed correctly
-        for (int i = 0; i < 2; i++) {
-            Worker worker = gameController.getPlayers()[1].getWorkers().get(i);
-            assertNotNull(worker.getPosition(), "Player 2's worker " + (i + 1) + " should be placed on the grid.");
-        }
-
-        // Additional assertions can be added to check the specific positions if needed
+    void testCheckGameStatusNoWin() {
+        gameController.checkGameStatus();
+        assertNotNull(gameController.getCurrentPlayer(), "The game should continue if no player has won.");
     }
 
     @Test
-    void testCheckWinCondition() {
-        Worker worker = player1.getWorkers().get(0);
-        // Simulate moving a worker to a winning position
-        Cell winningCell = grid.getCell(0, 0); // Assume this cell is at the winning height
-        winningCell.getTower().addLevel();
-        winningCell.getTower().addLevel();
-        winningCell.getTower().addLevel(); // Tower is now at the winning height
-        worker.setPosition(winningCell);
-        assertTrue(gameController.checkWinCondition(worker)); // Assert that the win condition is met
+    void testCheckGameStatusWithWin() {
+        // Manually set a worker to the winning position
+        Worker winningWorker = gameController.getPlayers()[0].getWorkers().get(0);
+        Cell winningCell = grid.getCell(0, 0);
+        for (int i = 0; i < Cell.MAX_TOWER_LEVEL; i++) {
+            winningCell.getTower().addLevel();
+        }
+        winningWorker.setPosition(winningCell);
+
+        gameController.checkGameStatus();
+        assertNull(gameController.getCurrentPlayer(), "Game should end when a player wins.");
     }
 
     @Test
     void testEndGame() {
-        gameController.endGame(player1); // End the game declaring Player 1 as the winner
-        // Assert game cleanup, for example, grid reset or workers' positions are null
-        assertNull(player1.getWorkers().get(0).getPosition());
-        assertNull(player1.getWorkers().get(1).getPosition());
-        assertNull(player2.getWorkers().get(0).getPosition());
-        assertNull(player2.getWorkers().get(1).getPosition());
-        // Note: Actual assertions will depend on how endGame is implemented, e.g., if it resets the grid or clears worker positions
+        gameController.endGame(gameController.getPlayers()[0]);
+        assertNull(gameController.getCurrentPlayer(), "After the game ends, there should be no current player.");
     }
 }

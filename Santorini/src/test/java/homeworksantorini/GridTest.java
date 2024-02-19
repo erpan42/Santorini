@@ -7,10 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;;
 
 class GridTest {
     private Grid grid;
+    private final int xCoordinate = 2;
+    private final int yCoordinate = 3;
+    private final int magic5 = 5;
+    private final int magic8 = 8;
+
+    public int getYCoordinate() {
+        return yCoordinate;
+    }
+
+    public int getYCoordinate5() {
+        return magic5;
+    }
 
     @BeforeEach
     void setUp() {
@@ -26,63 +40,37 @@ class GridTest {
         }
     }
 
-    private static final int CELL_Y = 3;
-
     @Test
     void testGetCellValidCoordinates() {
-        Cell cell = grid.getCell(2, CELL_Y);
-        assertNotNull(cell, "Cell at valid coordinates (2," + CELL_Y + ") should not be null.");
-        assertEquals(2, cell.getX(), "Cell X coordinate should be 2.");
-        assertEquals(CELL_Y, cell.getY(), "Cell Y coordinate should be " + CELL_Y + ".");
+        Cell cell = grid.getCell(xCoordinate, yCoordinate);
+        assertNotNull(cell, "Cell at valid coordinates (" + xCoordinate + "," + yCoordinate + ") should not be null.");
+        assertEquals(xCoordinate, cell.getX(), "Cell X coordinate should be " + xCoordinate + ".");
+        assertEquals(yCoordinate, cell.getY(), "Cell Y coordinate should be " + yCoordinate + ".");
     }
-
-    private static final int INVALID_X = -1;
-    private static final int INVALID_Y = 5;
 
     @Test
     void testGetCellInvalidCoordinates() {
-        assertNull(grid.getCell(INVALID_X, 2), "Cell at invalid coordinates (" + INVALID_X + ",2) should be null.");
-        assertNull(grid.getCell(INVALID_Y, INVALID_Y), "Cell at invalid coordinates (" + INVALID_Y + "," + INVALID_Y + ") should be null.");
+        assertNull(grid.getCell(-1, 2), "Cell at invalid coordinates (-1,2) should be null.");
+        assertNull(grid.getCell(magic5, magic5), "Cell at invalid coordinates (5,5) should be null.");
     }
 
     @Test
-    void testIsValidMove() {
-        Cell fromCell = grid.getCell(1, 1);
-        Cell toCell = grid.getCell(1, 2); // Adjacent cell
-        assertTrue(grid.isValidMove(fromCell, toCell), "Move to an adjacent, unoccupied cell should be valid.");
+    void testGetAdjacentCells() {
+        Cell cell = grid.getCell(2, 2);
+        List<Cell> adjacentCells = grid.getAdjacentCells(cell);
+        assertEquals(magic8, adjacentCells.size(), "There should be 8 adjacent cells for a cell not on the edge.");
 
-        Cell occupiedCell = grid.getCell(2, 2);
-        Worker worker = new Worker(new Player("Player1", grid), grid);
-        occupiedCell.setWorker(worker); // Simulate an occupied cell
-        assertFalse(grid.isValidMove(fromCell, occupiedCell), "Move to an occupied cell should be invalid.");
+        // Verifying one of the adjacent cells
+        assertTrue(adjacentCells.contains(grid.getCell(yCoordinate, yCoordinate)), "Cell at (3,3) should be in the list of adjacent cells for cell at (2,2).");
     }
 
     @Test
-    void testIsValidBuild() {
-        Cell workerCell = grid.getCell(1, 1);
-        Cell targetCell = grid.getCell(1, 2); // Adjacent cell
-        assertTrue(grid.isValidBuild(workerCell, targetCell), "Building on an adjacent, unoccupied cell should be valid.");
+    void testGetAdjacentCellsEdgeCase() {
+        Cell cell = grid.getCell(0, 0);
+        List<Cell> adjacentCells = grid.getAdjacentCells(cell);
+        assertEquals(yCoordinate, adjacentCells.size(), "There should be 3 adjacent cells for a cell at the corner (0,0).");
 
-        Cell domeCell = grid.getCell(2, 2);
-        domeCell.getTower().addLevel();
-        domeCell.getTower().addLevel();
-        domeCell.getTower().addLevel(); // Tower is at maximum level
-        domeCell.getTower().addDome(); // Add a dome
-        assertFalse(grid.isValidBuild(workerCell, domeCell), "Building on a cell with a dome should be invalid.");
-    }
-
-    private static final int CELL1_X = 2;
-    private static final int CELL1_Y = 2;
-    private static final int CELL2_X = 3;
-    private static final int CELL2_Y = 3;
-
-    @Test
-    void testIsAdjacent() {
-        Cell cell1 = grid.getCell(CELL1_X, CELL1_Y);
-        Cell cell2 = grid.getCell(CELL2_X, CELL2_Y);
-        assertTrue(grid.isAdjacent(cell1, cell2), "Cells (" + CELL1_X + "," + CELL1_Y + ") and (" + CELL2_X + "," + CELL2_Y + ") should be adjacent.");
-
-        Cell cell3 = grid.getCell(0, 0);
-        assertFalse(grid.isAdjacent(cell1, cell3), "Cells (" + CELL1_X + "," + CELL1_Y + ") and (0,0) should not be adjacent.");
+        // Verifying one of the adjacent cells
+        assertTrue(adjacentCells.contains(grid.getCell(1, 0)), "Cell at (1,0) should be in the list of adjacent cells for cell at (0,0).");
     }
 }

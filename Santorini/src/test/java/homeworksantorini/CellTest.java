@@ -23,7 +23,7 @@ class CellTest {
         occupiedCell = grid.getCell(0, 1); // Cell next to the initial cell
 
         worker = player.getWorkers().get(0);
-        anotherWorker = new Worker(player, grid); // Another worker for testing occupied cells
+        anotherWorker = new Worker(player); // Another worker for testing occupied cells
 
         worker.setPosition(initialCell);
         initialCell.setWorker(worker);
@@ -67,10 +67,10 @@ class CellTest {
 
     @Test
     void testDomePlacement() {
-        for (int i = 0; i < Grid.MAX_TOWER_LEVEL; i++) {
+        for (int i = 0; i < Cell.MAX_TOWER_LEVEL; i++) {
             worker.build(targetCell); // Build up to the max level
         }
-        assertEquals(Grid.MAX_TOWER_LEVEL, targetCell.getTowerLevel()); // Verify max level reached
+        assertEquals(Cell.MAX_TOWER_LEVEL, targetCell.getTowerLevel()); // Verify max level reached
 
         assertTrue(worker.build(targetCell)); // Add dome
         assertTrue(targetCell.hasDome()); // Verify dome is added
@@ -78,7 +78,7 @@ class CellTest {
 
     @Test
     void testBuildAfterDome() {
-        for (int i = 0; i <= Grid.MAX_TOWER_LEVEL; i++) {
+        for (int i = 0; i <= Cell.MAX_TOWER_LEVEL; i++) {
             worker.build(targetCell); // Build up to and including dome placement
         }
         assertFalse(worker.build(targetCell)); // Attempt to build after dome should fail

@@ -50,7 +50,13 @@ public class GameController {
     public void endGame(Player winner) {
         // Announce the winner
         // System.out.println("Game Over. The winner is Player: " + winner.getId());
-
+        for (Player player : players) {
+            for (Worker worker : player.getWorkers()) {
+                worker.setPosition(null); // Reset workers' positions
+            }
+        }
+    
+        this.currentPlayer = null; // Indicate the game has ended by setting currentPlayer to null
         // Clean up the game state if necessary
         this.grid = null; // Reset the grid
         for (Player player : players) {

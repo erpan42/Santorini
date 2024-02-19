@@ -37,12 +37,13 @@ public class Player {
 
     // Check if any of this player's workers meet the win condition
     public boolean checkWinCondition() {
-        for (Worker worker : workers) {
-            if (worker.getPosition().getTowerLevel() == WIN_CONDITION_TOWER_LEVEL) {
-                return true; // Win condition met
+        for (Worker worker : this.workers) {
+            // Check if the position is not null before accessing its methods
+            if (worker.getPosition() != null && worker.getPosition().getTowerLevel() == WIN_CONDITION_TOWER_LEVEL) {
+                return true; // Win condition is met
             }
         }
-        return false; // No worker has met the win condition yet
+        return false; // No worker meets the win condition
     }
 
     public List<Worker> getWorkers() {

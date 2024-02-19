@@ -3,30 +3,44 @@ package homeworksantorini;
 public class Worker {
     private Cell position;
     private Player owner;
-    private boolean isMoved;
+    private boolean isActive;
 
     public Worker(Player owner) {
         this.owner = owner;
         this.position = null; // No initial position
-        this.isMoved = false;
+        this.isActive = false;
     }
    
     public boolean move(Cell toCell) {
-        if (toCell.isValidMove(this.position, toCell)) {
+        // Check if toCell is not null before proceeding with the move
+        if (toCell == null) {
+            System.out.println("Error: The target cell for the move is invalid.");
+            return false; // Move was unsuccessful because the target cell is invalid
+        }
+    
+        if (this.position.isValidMove(this.position, toCell)) {
             setPosition(toCell);
-            this.isMoved = true;
+            this.isActive = true;
             return true; // Move was successful
         }
-        return false; // Move was unsuccessful
+        return false; // Move was unsuccessful due to other reasons (e.g., target cell is occupied or not adjacent)
     }
+    
 
     public boolean build(Cell targetCell) {
-        if (targetCell.isValidBuild(this.position, targetCell)) {
+        // Check if targetCell is not null before attempting to build
+        if (targetCell == null) {
+            System.out.println("Error: The target cell for building is invalid.");
+            return false; // Building was unsuccessful because the target cell is invalid
+        }
+        
+        if (this.position.isValidBuild(this.position, targetCell)) {
             if (targetCell.getTowerLevel() < Cell.MAX_TOWER_LEVEL) {
                 targetCell.getTower().addLevel();
             } else if (!targetCell.getTower().hasDome()) {
                 targetCell.getTower().addDome();
             }
+            this.isActive = false; // Worker action done
             return true; // Build was successful
         }
         return false; // Build was unsuccessful
@@ -37,10 +51,16 @@ public class Worker {
     }
 
     public void setPosition(Cell newPosition) {
-        this.position.setWorker(null); // Clear the current cell
-        this.position = newPosition;
+        // Only clear the current cell if position is not null
+        if (this.position != null) {
+            this.position.setWorker(null); // Clear the current cell
+        }
+        
+        this.position = newPosition; // Update the position to the new cell
+    
+        // Assign this worker to the new position's cell, if the new position is not null
         if (newPosition != null) {
-            newPosition.setWorker(this); // Assign this worker to the cell
+            newPosition.setWorker(this);
         }
     }
 
@@ -49,14 +69,14 @@ public class Worker {
     }
 
     public boolean hasMoved() {
-        return this.isMoved;
+        return this.isActive;
     }
 
     public void resetMove() {
-        this.isMoved = false;
+        this.isActive = false;
     }
 
-    public void setMoved(boolean isMoved) {
-        this.isMoved = isMoved;
+    public void setMoved(boolean isActive) {
+        this.isActive = isActive;
     }
 }
