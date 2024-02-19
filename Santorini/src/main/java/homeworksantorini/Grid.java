@@ -1,46 +1,61 @@
 package homeworksantorini;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Grid {
     public static final int GRID_SIZE = 5;
-    public static final int MAX_TOWER_LEVEL = 3;
     private Cell[][] cells = new Cell[GRID_SIZE][GRID_SIZE];
 
     public Grid() {
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
-                cells[x][y] = new Cell(x, y); // Initialize each cell with its coordinates
+                cells[x][y] = new Cell(x, y, this); // Initialize each cell with its coordinates
             }
         }
     }
 
+    /**
+     * Retrieves the cell at the specified coordinates.
+     * 
+     * @param x The x-coordinate of the cell.
+     * @param y The y-coordinate of the cell.
+     * @return The cell at the given coordinates, or null if the coordinates are out of bounds.
+     */
     public Cell getCell(int x, int y) {
+        // Check if the provided coordinates are within the grid bounds
         if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
             return cells[x][y];
+        } else {
+            // Return null if the coordinates are out of bounds to indicate an invalid cell
+            return null;
         }
-        return null; // Return null for invalid coordinates
+    }
+    
+    public List<Cell> getAdjacentCells(Cell cell) {
+        List<Cell> adjacentCells = new ArrayList<>();
+        int x = cell.getX();
+        int y = cell.getY();
+
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) {
+                    // Skip the cell itself
+                    continue;
+                }
+
+                int adjacentX = x + i;
+                int adjacentY = y + j;
+
+                // Check if the adjacent cell is within the grid bounds
+                if (adjacentX >= 0 && adjacentX < GRID_SIZE && adjacentY >= 0 && adjacentY < GRID_SIZE) {
+                    Cell adjacentCell = cells[adjacentX][adjacentY];
+                    adjacentCells.add(adjacentCell);
+                }
+            }
+        }
+
+        return adjacentCells;
     }
 
-    public boolean isValidMove(Cell fromCell, Cell toCell) {
-        if (fromCell == null || toCell == null) return false;
-        if (toCell.hasWorker() || toCell.getTower().hasDome()) return false; // Target cell is occupied or has dome
-        if (!isAdjacent(fromCell, toCell)) return false; // Not adjacent
-        if (Math.abs(toCell.getTowerLevel() - fromCell.getTowerLevel()) > 1) return false; // Too high to move
-
-        return true;
-    }
-
-    public boolean isValidBuild(Cell workerCell, Cell targetCell) {
-        if (workerCell == null || targetCell == null) return false;
-        if (!isAdjacent(workerCell, targetCell)) return false; // Not adjacent
-        if (targetCell.hasWorker() || targetCell.getTower().hasDome()) return false; // Occupied or has dome
-
-        return true;
-    }
-
-    public boolean isAdjacent(Cell cell1, Cell cell2) {
-        int x1 = cell1.getX(), y1 = cell1.getY();
-        int x2 = cell2.getX(), y2 = cell2.getY();
-
-        return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1 && !(x1 == x2 && y1 == y2);
-    }
 }
