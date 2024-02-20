@@ -9,7 +9,7 @@ public class Player {
     private static final int WIN_CONDITION_TOWER_LEVEL = 3;
     private Worker selectedWorker;
     
-    public Player(String id, Grid grid) {
+    public Player(String id) {
         this.id = id;
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this));

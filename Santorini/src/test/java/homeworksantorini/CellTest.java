@@ -17,7 +17,7 @@ class CellTest {
     @BeforeEach
     void setUp() {
         grid = new Grid();
-        player = new Player("Player1", grid);
+        player = new Player("Player1");
         initialCell = grid.getCell(0, 0);
         targetCell = grid.getCell(1, 1);
         occupiedCell = grid.getCell(0, 1); // Cell next to the initial cell

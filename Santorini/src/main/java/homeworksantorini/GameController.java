@@ -9,8 +9,8 @@ public class GameController {
     public GameController(String player1Id, String player2Id, Grid grid) {
         this.grid = grid;
         this.players = new Player[2];
-        this.players[0] = new Player(player1Id, grid);
-        this.players[1] = new Player(player2Id, grid);
+        this.players[0] = new Player(player1Id);
+        this.players[1] = new Player(player2Id);
         this.currentPlayer = this.players[0]; // Player 1 starts
     }
     

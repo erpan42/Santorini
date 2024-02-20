@@ -16,7 +16,7 @@ class WorkerTest {
     @BeforeEach
     void setUp() {
         grid = new Grid();
-        player = new Player("Player1", grid);
+        player = new Player("Player1");
         worker = new Worker(player);
         initialCell = grid.getCell(1, 1);
         adjacentCell = grid.getCell(1, 2); // Adjacent to initialCell

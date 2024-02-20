@@ -16,7 +16,7 @@ class PlayerTest {
     @BeforeEach
     void setUp() {
         grid = new Grid();
-        player = new Player("Player1", grid);
+        player = new Player("Player1");
         initialCell = grid.getCell(0, 0);
         targetMoveCell = grid.getCell(1, 0); // Adjacent cell for valid move
         targetBuildCell = grid.getCell(1, 1); // Adjacent cell for valid build
