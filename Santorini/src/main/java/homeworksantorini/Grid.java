@@ -32,6 +32,12 @@ public class Grid {
         }
     }
     
+    /**
+     * Retrieves the list of adjacent cells to the specified cell.
+     * 
+     * @param cell The cell to retrieve the adjacent cells for.
+     * @return The list of adjacent cells to the specified cell.
+     */
     public List<Cell> getAdjacentCells(Cell cell) {
         List<Cell> adjacentCells = new ArrayList<>();
         int x = cell.getX();

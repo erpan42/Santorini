@@ -16,7 +16,13 @@ public class Player {
         this.workers.add(new Worker(this));
     }
 
-   // Method to select a worker based on coordinates
+    /**
+     * Selects a worker based on the provided coordinates.
+     *
+     * @param x The x-coordinate of the worker's position.
+     * @param y The y-coordinate of the worker's position.
+     * @return true if a worker is found at the given coordinates, false otherwise.
+     */
     public boolean selectWorkerByCoordinates(int x, int y) {
         for (Worker worker : workers) {
             Cell workerCell = worker.getPosition();
@@ -30,7 +36,13 @@ public class Player {
         return false;
     }
 
-    // Move a worker to a new cell
+    /**
+     * Moves the specified worker to the target cell.
+     *
+     * @param worker The worker to be moved.
+     * @param toCell The target cell to move the worker to.
+     * @return true if the move is successful, false otherwise.
+     */
     public boolean moveWorker(Worker worker, Cell toCell) {
         if (workers.contains(worker) && worker.move(toCell)) {
             System.out.println("Worker moved successfully.");
@@ -40,7 +52,13 @@ public class Player {
         return false;
     }
 
-    // Build with a worker
+    /**
+     * Performs a build action with the specified worker on the target cell.
+     *
+     * @param worker The worker to perform the build action.
+     * @param onCell The target cell to build on.
+     * @return true if the build is successful, false otherwise.
+     */
     public boolean buildWithWorker(Worker worker, Cell onCell) {
         if (workers.contains(worker) && worker.hasMoved() && worker.build(onCell)) {
             System.out.println("Build successful.");
@@ -50,7 +68,11 @@ public class Player {
         return false;
     }
 
-    // Check if any of this player's workers meet the win condition
+    /**
+     * Checks if any of the player's workers meet the win condition.
+     *
+     * @return true if a worker meets the win condition, false otherwise.
+     */
     public boolean checkWinCondition() {
         for (Worker worker : this.workers) {
             // Check if the position is not null before accessing its methods
@@ -69,12 +91,20 @@ public class Player {
         return this.id;
     }
 
-    // Method to get the first worker
+    /**
+     * Retrieves the first worker of the player.
+     *
+     * @return The first worker of the player, or null if no workers are available.
+     */
     public Worker getWorker1() {
         return workers.size() > 0 ? workers.get(0) : null;
     }
 
-    // Method to get the second worker
+    /**
+     * Retrieves the second worker of the player.
+     *
+     * @return The second worker of the player, or null if no workers are available.
+     */
     public Worker getWorker2() {
         return workers.size() > 1 ? workers.get(1) : null;
     }

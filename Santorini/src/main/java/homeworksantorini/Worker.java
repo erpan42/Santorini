@@ -11,6 +11,12 @@ public class Worker {
         this.isActive = false;
     }
    
+    /**
+     * Moves the worker to the specified cell.
+     *
+     * @param toCell The target cell to move the worker to.
+     * @return true if the move is successful, false otherwise.
+     */
     public boolean move(Cell toCell) {
         // Check if toCell is not null before proceeding with the move
         if (toCell == null) {
@@ -26,7 +32,12 @@ public class Worker {
         return false; // Move was unsuccessful due to other reasons (e.g., target cell is occupied or not adjacent)
     }
     
-
+    /**
+     * Performs a build action on the specified cell.
+     *
+     * @param onCell The target cell to build on.
+     * @return true if the build is successful, false otherwise.
+     */
     public boolean build(Cell onCell) {
         // Check if onCell is not null before attempting to build
         if (onCell == null) {
@@ -50,6 +61,11 @@ public class Worker {
         return this.position;
     }
 
+    /**
+     * Sets the position of the worker to the specified cell.
+     *
+     * @param newPosition The new position cell for the worker.
+     */
     public void setPosition(Cell newPosition) {
         // Only clear the current cell if position is not null
         if (this.position != null) {
