@@ -42,7 +42,7 @@ public class Player {
 
     // Build with a worker
     public boolean buildWithWorker(Worker worker, Cell onCell) {
-        if (workers.contains(worker) && worker.build(onCell)) {
+        if (workers.contains(worker) && worker.hasMoved() && worker.build(onCell)) {
             System.out.println("Build successful.");
             return true;
         }

@@ -39,7 +39,12 @@ public class GameController {
     }
 
     // Method to handle a move action for the current player's selected worker
-    public boolean playerMove(int x, int y) {
+    public boolean playerMove(Player player, int x, int y) {
+        if (player != currentPlayer) {
+            System.out.println("It's not your turn. Please wait for your turn.");
+            return false;
+        }
+        
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasWorker()) {
             return currentPlayer.moveWorker(currentPlayer.getSelectedWorker(), targetCell);
@@ -49,7 +54,12 @@ public class GameController {
     }
 
     // Method to handle a build action for the current player's selected worker
-    public boolean playerBuild(int x, int y) {
+    public boolean playerBuild(Player player, int x, int y) {
+        if (player != currentPlayer) {
+            System.out.println("It's not your turn. Please wait for your turn.");
+            return false;
+        }
+        
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasDome()) {
             return currentPlayer.buildWithWorker(currentPlayer.getSelectedWorker(), targetCell);
