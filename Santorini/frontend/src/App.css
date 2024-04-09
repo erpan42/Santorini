@@ -1,0 +1,51 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px; /* Smaller gap */
+  margin-bottom: 10px;
+  width: fit-content; /* New: makes the grid only as wide as it needs to be */
+  margin-left: auto; /* New: along with margin-right, centers the grid */
+  margin-right: auto; /* New: centers the grid */
+}
+
+
+.cell {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 80px; /* Adjusted */
+  font-size: 12px; /* Smaller text */
+  text-align: center;
+  cursor: pointer;
+  aspect-ratio: 1 / 1;
+  max-width: 50px; /* New: max-width to limit cell size */
+  max-height: 50px; /* New: max-height to maintain aspect ratio */
+}
+
+
+
+
+.players {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.player {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.game-info {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
