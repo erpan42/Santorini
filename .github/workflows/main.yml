@@ -35,3 +35,26 @@ jobs:
         run: |
           cd Santorini
           timeout 2m mvn -f pom.xml site
+
+      # Compile Java code
+      - name: Compile Java code
+        run: |
+          cd Santorini
+          timeout 2m mvn compile
+
+      # Run tests for Java code
+      - name: Run tests for Java code
+        run: |
+          cd Santorini
+          timeout 2m mvn test
+
+      # Set up Node.js
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      # Install dependencies for frontend
+      - name: Install dependencies for frontend
+        run: |
+          cd frontend
+          timeout 2m npm install
