@@ -1,28 +1,24 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 2px; /* Smaller gap */
+  gap: 10px; /* Smaller gap */
   margin-bottom: 10px;
   width: fit-content; /* New: makes the grid only as wide as it needs to be */
   margin-left: auto; /* New: along with margin-right, centers the grid */
   margin-right: auto; /* New: centers the grid */
 }
 
-
 .cell {
-  background-color: #f0f0f0;
+  background-color: #dc2121;
   border: none;
-  padding: 80px; /* Adjusted */
-  font-size: 12px; /* Smaller text */
+  padding: 10px; /* Reduced padding */
+  font-size: 30px; /* Smaller text */
   text-align: center;
   cursor: pointer;
-  aspect-ratio: 1 / 1;
-  max-width: 50px; /* New: max-width to limit cell size */
-  max-height: 50px; /* New: max-height to maintain aspect ratio */
+  aspect-ratio: 2 / 1; /* Increased aspect ratio for wider cells */
+  max-width: 100px; /* Increased max-width */
+  max-height: 50px; /* Adjusted max-height to maintain aspect ratio */
 }
-
-
-
 
 .players {
   display: flex;
