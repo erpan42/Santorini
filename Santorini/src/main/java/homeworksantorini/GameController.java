@@ -4,16 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tika.io.IOExceptionWithCause;
-
-
 public class GameController {
     private Player[] players;
     private Player currentPlayer;
     private Grid grid;
     private Player winner;
-    private GameServer server;
-    private final int port = 8080;
     private final int maxWorkers = 4;
     private int placedWorkers;
     private List<ResponseMessage> messages;
@@ -32,6 +27,9 @@ public class GameController {
         return placedWorkers;
     }
 
+    /**
+     * Resets the game state to the initial state.
+     */
     public void resetGame() {
         grid = new Grid();
         for (Player player : players) {
@@ -44,10 +42,11 @@ public class GameController {
         winner = null;
     }
 
-    public boolean isGameOver() {
-        return winner != null;
-    }
-
+    /**
+     * Sets the winner of the game.
+     *
+     * @param player The player who has won the game.
+     */
     private void setWinner(Player player) {
         winner = player;
     }
@@ -148,6 +147,13 @@ public class GameController {
         return false;
     }
 
+    /**
+     * Handles a build action for the current player's selected worker.
+     *
+     * @param x The x-coordinate of the target cell.
+     * @param y The y-coordinate of the target cell.
+     * @return true if the build is successful, false otherwise.
+     */
     public boolean playerBuild(int x, int y) {
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasDome()) {

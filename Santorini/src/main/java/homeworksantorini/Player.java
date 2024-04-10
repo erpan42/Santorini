@@ -19,6 +19,11 @@ public class Player {
         this.workers.add(new Worker(this));
     }
 
+    /**
+     * Converts the player data to a serializable format.
+     *
+     * @return A map containing the player data in a serializable format.
+     */
     public Map<String, Object> toSerializableFormat() {
         Map<String, Object> playerData = new HashMap<>();
         playerData.put("id", id); 
@@ -128,6 +133,11 @@ public class Player {
         return this.selectedWorker;
     }
 
+    /**
+     * Retrieves a worker that has not been placed on the grid.
+     *
+     * @return An unplaced worker, or null if all workers have been placed.
+     */
     public Worker getUnplacedWorker() {
         for (Worker worker : workers) {
             if (worker.getPosition() == null) { // Assuming Worker class has a getPosition method

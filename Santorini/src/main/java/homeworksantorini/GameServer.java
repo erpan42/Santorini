@@ -28,11 +28,25 @@ public class GameServer extends NanoHTTPD {
             .create();
     }
 
+    /**
+     * Creates a response with the specified status, MIME type, and content.
+     *
+     * @param status   The status of the response.
+     * @param mimeType The MIME type of the response.
+     * @param content  The content of the response.
+     * @return The response with the specified status, MIME type, and content.
+     */
     private Response createResponse(Response.Status status, String mimeType, String content) {
         Response response = newFixedLengthResponse(status, mimeType, content);
         return addCORSHeaders(response);
     }
 
+    /**
+     * Adds the CORS headers to the response.
+     *
+     * @param response The response to add the CORS headers to.
+     * @return The response with the CORS headers added.
+     */
     private Response addCORSHeaders(Response response) {
         response.addHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -55,6 +69,7 @@ public class GameServer extends NanoHTTPD {
             return response;
         }
     
+        // Handle the game requests
         if (uri.equals("/api/game/start") && session.getMethod().equals(Method.POST)) {
             String player1Id = parameters.containsKey("player1Id") ? parameters.get("player1Id").get(0) : "Player 1";
             String player2Id = parameters.containsKey("player2Id") ? parameters.get("player2Id").get(0) : "Player 2";

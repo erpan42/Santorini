@@ -14,6 +14,11 @@ public class Worker {
         this.isActive = false;
     }
 
+    /**
+     * Converts the worker data to a serializable format.
+     *
+     * @return A map containing the worker data in a serializable format.
+     */
     public Map<String, Object> toSerializableFormat() {
         Map<String, Object> workerData = new HashMap<>();
         workerData.put("x", position != null ? position.getX() : null);

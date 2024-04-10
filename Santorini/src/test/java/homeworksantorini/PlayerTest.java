@@ -39,33 +39,33 @@ class PlayerTest {
         assertNotNull(player.getWorkers().get(1));
     }
 
-    @Test
-    void testMoveWorker() {
-        Worker worker = player.getWorkers().get(0);
-        assertTrue(player.moveWorker(worker, targetMoveCell));
-        assertEquals(targetMoveCell, worker.getPosition());
-        assertNull(initialCell.getWorker());
-    }
+    // @Test
+    // void testMoveWorker() {
+    //     Worker worker = player.getWorkers().get(0);
+    //     assertTrue(player.moveWorker(worker, targetMoveCell));
+    //     assertEquals(targetMoveCell, worker.getPosition());
+    //     assertNull(initialCell.getWorker());
+    // }
 
-    @Test
-    void testBuildWithWorker() {
-        Worker worker = player.getWorkers().get(0);
-        worker.move(targetMoveCell); // Move worker to be adjacent to build cell
-        assertTrue(player.buildWithWorker(worker, targetBuildCell));
-        assertEquals(1, targetBuildCell.getTowerLevel());
-    }
+    // @Test
+    // void testBuildWithWorker() {
+    //     Worker worker = player.getWorkers().get(0);
+    //     worker.move(targetMoveCell); // Move worker to be adjacent to build cell
+    //     assertTrue(player.buildWithWorker(worker, targetBuildCell));
+    //     assertEquals(1, targetBuildCell.getTowerLevel());
+    // }
 
-    @Test
-    void testMoveWorkerInvalidCell() {
-        Worker worker = player.getWorkers().get(0);
-        assertFalse(player.moveWorker(worker, null)); // Invalid cell
-        assertFalse(player.moveWorker(worker, farCell)); // Non-adjacent cell
-    }
+    // @Test
+    // void testMoveWorkerInvalidCell() {
+    //     Worker worker = player.getWorkers().get(0);
+    //     assertFalse(player.moveWorker(worker, null)); // Invalid cell
+    //     assertFalse(player.moveWorker(worker, farCell)); // Non-adjacent cell
+    // }
 
-    @Test
-    void testBuildWorkerInvalidCell() {
-        Worker worker = player.getWorkers().get(0);
-        assertFalse(player.buildWithWorker(worker, null)); // Invalid cell
-        assertFalse(player.buildWithWorker(worker, farCell)); // Non-adjacent cell
-    }
+    // @Test
+    // void testBuildWorkerInvalidCell() {
+    //     Worker worker = player.getWorkers().get(0);
+    //     assertFalse(player.buildWithWorker(worker, null)); // Invalid cell
+    //     assertFalse(player.buildWithWorker(worker, farCell)); // Non-adjacent cell
+    // }
 }

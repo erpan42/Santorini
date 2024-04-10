@@ -6,7 +6,12 @@ import fi.iki.elonen.NanoHTTPD;
 
 public class Main {
     private static final int SERVER_PORT = 8080;
-
+    
+    /**
+     * Main method to start the server.
+     *
+     * @param args The command line arguments.
+     */
     public static void main(String[] args) {
         try {
             GameController gameController = new GameController("Player 1", "Player 2", new Grid());

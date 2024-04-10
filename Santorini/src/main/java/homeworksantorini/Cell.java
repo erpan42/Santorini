@@ -16,6 +16,11 @@ public class Cell {
         this.worker = null;
     }
 
+    /**
+     * Converts the cell data to a serializable format.
+     *
+     * @return A map containing the cell data in a serializable format.
+     */
     public Map<String, Object> toSerializableFormat() {
         Map<String, Object> cellData = new HashMap<>();
         cellData.put("towerLevel", getTowerLevel());

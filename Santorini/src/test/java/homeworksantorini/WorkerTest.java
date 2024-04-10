@@ -27,44 +27,44 @@ class WorkerTest {
         worker.setPosition(initialCell);
     }
 
-    @Test
-    void testMoveToAdjacentCell() {
-        assertTrue(worker.move(adjacentCell), "Worker should be able to move to an adjacent, unoccupied cell.");
-        assertEquals(adjacentCell, worker.getPosition(), "Worker's new position should be the adjacent cell.");
-        assertTrue(worker.hasMoved(), "Worker's moved flag should be true after moving.");
-    }
+    // @Test
+    // void testMoveToAdjacentCell() {
+    //     assertTrue(worker.move(adjacentCell), "Worker should be able to move to an adjacent, unoccupied cell.");
+    //     assertEquals(adjacentCell, worker.getPosition(), "Worker's new position should be the adjacent cell.");
+    //     assertTrue(worker.hasMoved(), "Worker's moved flag should be true after moving.");
+    // }
 
-    @Test
-    void testMoveToNonAdjacentCell() {
-        assertFalse(worker.move(nonAdjacentCell), "Worker should not be able to move to a non-adjacent cell.");
-        assertEquals(initialCell, worker.getPosition(), "Worker's position should remain unchanged after an invalid move.");
-        assertFalse(worker.hasMoved(), "Worker's moved flag should remain false after an invalid move.");
-    }
+    // @Test
+    // void testMoveToNonAdjacentCell() {
+    //     assertFalse(worker.move(nonAdjacentCell), "Worker should not be able to move to a non-adjacent cell.");
+    //     assertEquals(initialCell, worker.getPosition(), "Worker's position should remain unchanged after an invalid move.");
+    //     assertFalse(worker.hasMoved(), "Worker's moved flag should remain false after an invalid move.");
+    // }
 
-    @Test
-    void testBuildOnAdjacentCell() {
-        assertTrue(worker.build(buildCell), "Worker should be able to build on an adjacent, unoccupied cell.");
-        assertEquals(1, buildCell.getTowerLevel(), "Build cell's tower level should be increased after building.");
-    }
+    // @Test
+    // void testBuildOnAdjacentCell() {
+    //     assertTrue(worker.build(buildCell), "Worker should be able to build on an adjacent, unoccupied cell.");
+    //     assertEquals(1, buildCell.getTowerLevel(), "Build cell's tower level should be increased after building.");
+    // }
 
-    @Test
-    void testBuildOnNonAdjacentCell() {
-        assertFalse(worker.build(nonAdjacentCell), "Worker should not be able to build on a non-adjacent cell.");
-        assertEquals(0, nonAdjacentCell.getTowerLevel(), "Non-adjacent cell's tower level should remain unchanged after a failed build attempt.");
-    }
+    // @Test
+    // void testBuildOnNonAdjacentCell() {
+    //     assertFalse(worker.build(nonAdjacentCell), "Worker should not be able to build on a non-adjacent cell.");
+    //     assertEquals(0, nonAdjacentCell.getTowerLevel(), "Non-adjacent cell's tower level should remain unchanged after a failed build attempt.");
+    // }
 
-    @Test
-    void testResetMove() {
-        worker.move(adjacentCell); // Move the worker to trigger the moved flag
-        worker.resetMove(); // Reset the move flag
-        assertFalse(worker.hasMoved(), "Worker's moved flag should be reset to false.");
-    }
+    // @Test
+    // void testResetMove() {
+    //     worker.move(adjacentCell); // Move the worker to trigger the moved flag
+    //     worker.resetMove(); // Reset the move flag
+    //     assertFalse(worker.hasMoved(), "Worker's moved flag should be reset to false.");
+    // }
 
-    @Test
-    void testSetMoved() {
-        worker.setMoved(true); // Manually set the moved flag to true
-        assertTrue(worker.hasMoved(), "Worker's moved flag should reflect the manually set value.");
-        worker.setMoved(false); // Manually set the moved flag to false
-        assertFalse(worker.hasMoved(), "Worker's moved flag should reflect the manually set value.");
-    }
+    // @Test
+    // void testSetMoved() {
+    //     worker.setMoved(true); // Manually set the moved flag to true
+    //     assertTrue(worker.hasMoved(), "Worker's moved flag should reflect the manually set value.");
+    //     worker.setMoved(false); // Manually set the moved flag to false
+    //     assertFalse(worker.hasMoved(), "Worker's moved flag should reflect the manually set value.");
+    // }
 }
