@@ -1,44 +1,110 @@
 package homeworksantorini;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.tika.io.IOExceptionWithCause;
+
 
 public class GameController {
     private Player[] players;
     private Player currentPlayer;
     private Grid grid;
+    private Player winner;
+    private GameServer server;
+    private final int port = 8080;
+    private final int maxWorkers = 4;
+    private int placedWorkers;
+    private List<ResponseMessage> messages;
 
-    public GameController(String player1Id, String player2Id, Grid grid) {
-        this.grid = grid;
+    public GameController(String player1Id, String player2Id, Grid grid) throws IOException {
+        this.grid = new Grid();
         this.players = new Player[2];
         this.players[0] = new Player(player1Id);
         this.players[1] = new Player(player2Id);
         this.currentPlayer = this.players[0]; // Player 1 starts
+        this.placedWorkers = 0;
+        this.messages = new ArrayList<>();
+    }
+
+    public int getPlacedWorkers() {
+        return placedWorkers;
+    }
+
+    public void resetGame() {
+        grid = new Grid();
+        for (Player player : players) {
+            for (Worker worker : player.getWorkers()) {
+                worker.setPosition(null);
+            }
+        }
+        placedWorkers = 0;
+        currentPlayer = players[0];
+        winner = null;
+    }
+
+    public boolean isGameOver() {
+        return winner != null;
+    }
+
+    private void setWinner(Player player) {
+        winner = player;
     }
     
     /**
-     * Sets the initial worker positions for the specified player.
+     * Sets the initial position of a worker for a player.
      *
-     * @param player     The player to set the worker positions for.
-     * @param position1  The coordinates of the first worker's position.
-     * @param position2  The coordinates of the second worker's position.
-     * @return true if the worker positions are set successfully, false otherwise.
+     * @param player   The player whose worker's position is being set.
+     * @param position The coordinates of the worker's position.
      */
-    public boolean setInitialWorkerPosition(Player player, int[] position1, int[] position2) {
-        if (position1[0] == position2[0] && position1[1] == position2[1]) {
-            System.out.println("Error: Worker positions cannot be the same.");
-            return false;
-        } else if (grid.getCell(position1[0], position1[1]) == null || grid.getCell(position2[0], position2[1]) == null) {
-            System.out.println("Error: Worker positions are invalid.");
-            return false;
-        } else if (grid.getCell(position1[0], position1[1]).hasWorker() || grid.getCell(position2[0], position2[1]).hasWorker()) {
-            System.out.println("Error: Worker positions are already occupied.");
-            return false;
-        } else {
-            // Place the workers on the grid
-            player.getWorker1().setPosition(grid.getCell(position1[0], position1[1]));
-            player.getWorker2().setPosition(grid.getCell(position2[0], position2[1]));
-            System.out.println("Workers placed successfully.");
-            return true;
+    public void setInitialWorkerPosition(Player player, int[] position) {
+        if (placedWorkers >= maxWorkers) {
+            ResponseMessage responseMessage = new ResponseMessage("Error: All workers have been placed.");
+            messages.add(responseMessage);
+            return;
         }
+
+        if (player != currentPlayer) {
+            ResponseMessage responseMessage = new ResponseMessage("Error: It's not the current player's turn to place a worker.");
+            messages.add(responseMessage);
+            System.out.println("Error: It's not the current player's turn to place a worker.");
+            return;
+        }
+
+        if (grid.getCell(position[0], position[1]) == null) {
+            ResponseMessage responseMessage = new ResponseMessage("Error: Worker position is invalid.");
+            messages.add(responseMessage);
+            System.out.println("Error: Worker position is invalid.");
+            return;
+        } else if (grid.getCell(position[0], position[1]).hasWorker()) {
+            ResponseMessage responseMessage = new ResponseMessage("Error: Worker position is already occupied.");
+            messages.add(responseMessage);
+            System.out.println("Error: Worker position is already occupied.");
+            return;
+        } else {
+            Worker worker = player.getUnplacedWorker();
+            if (worker != null) {
+                Cell cell = grid.getCell(position[0], position[1]);
+                if (cell != null) {
+                    worker.setPosition(cell);
+                    placedWorkers++;
+                    System.out.println("Worker placed successfully at (" + position[0] + ", " + position[1] + ")");
+        
+                    if (placedWorkers == 2 || placedWorkers == maxWorkers) {
+                        changeTurn();
+                    }
+                } else {
+                    ResponseMessage responseMessage = new ResponseMessage("Error: Invalid cell position.");
+                    messages.add(responseMessage);
+                    System.out.println("Error: Invalid cell position.");
+                }
+            }
+        }
+    }
+    
+    public Player getWinner() {
+        return winner;
     }
 
     /**
@@ -49,49 +115,52 @@ public class GameController {
      * @return true if a worker is selected successfully, false otherwise.
      */
     public boolean selectWorkerForCurrentPlayer(int x, int y) {
-        return currentPlayer.selectWorkerByCoordinates(x, y);
+        boolean selected = currentPlayer.selectWorkerByCoordinates(x, y);
+        if (selected) {
+            return selected;
+        }
+        ResponseMessage responseMessage = new ResponseMessage("Invalid worker selection. Please try again.");
+        messages.add(responseMessage);
+        System.out.println("Invalid worker selection. Please try again.");
+        return false;
     }
 
     /**
      * Handles a move action for the current player's selected worker.
      *
-     * @param player The player attempting to make the move.
      * @param x      The x-coordinate of the target cell.
      * @param y      The y-coordinate of the target cell.
      * @return true if the move is successful, false otherwise.
      */
-    public boolean playerMove(Player player, int x, int y) {
-        if (player != currentPlayer) {
-            System.out.println("It's not your turn. Please wait for your turn.");
-            return false;
-        }
-        
+    public boolean playerMove(int x, int y) {
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasWorker()) {
-            return currentPlayer.moveWorker(currentPlayer.getSelectedWorker(), targetCell);
+            boolean moveSuccessful = currentPlayer.moveWorker(grid, currentPlayer.getSelectedWorker(), targetCell);
+            if (moveSuccessful) {
+                checkGameStatus();
+                return moveSuccessful;
+            }
+            
         }
+        ResponseMessage responseMessage = new ResponseMessage("Invalid move. Please try again.");
+        messages.add(responseMessage);
         System.out.println("Invalid move. Please try again.");
         return false;
     }
 
-    /**
-     * Handles a build action for the current player's selected worker.
-     *
-     * @param player The player attempting to perform the build action.
-     * @param x      The x-coordinate of the target cell.
-     * @param y      The y-coordinate of the target cell.
-     * @return true if the build action is successful, false otherwise.
-     */
-    public boolean playerBuild(Player player, int x, int y) {
-        if (player != currentPlayer) {
-            System.out.println("It's not your turn. Please wait for your turn.");
-            return false;
-        }
-        
+    public boolean playerBuild(int x, int y) {
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasDome()) {
-            return currentPlayer.buildWithWorker(currentPlayer.getSelectedWorker(), targetCell);
+            boolean buildSuccessful = currentPlayer.buildWithWorker(grid, currentPlayer.getSelectedWorker(), targetCell);
+            if (buildSuccessful) {
+                checkGameStatus();
+                changeTurn();
+                return buildSuccessful;
+            }
+            
         }
+        ResponseMessage responseMessage = new ResponseMessage("Invalid build. Please try again.");
+        messages.add(responseMessage);
         System.out.println("Invalid build. Please try again.");
         return false;
     }
@@ -103,7 +172,7 @@ public class GameController {
     public void checkGameStatus() {
         for (Player player : players) {
             if (player.checkWinCondition()) {
-                endGame(player);
+                setWinner(player);
                 break; // Exit the loop as the game ends when a player wins
             }
         }
@@ -117,30 +186,6 @@ public class GameController {
         currentPlayer = (currentPlayer == players[0]) ? players[1] : players[0];
     }  
 
-    /**
-     * Ends the game and announces the winner.
-     *
-     * @param winner The player who has won the game.
-     */
-    public void endGame(Player winner) {
-        // Announce the winner
-        // System.out.println("Game Over. The winner is Player: " + winner.getId());
-        for (Player player : players) {
-            for (Worker worker : player.getWorkers()) {
-                worker.setPosition(null); // Reset workers' positions
-            }
-        }
-    
-        this.currentPlayer = null; // Indicate the game has ended by setting currentPlayer to null
-        // Clean up the game state if necessary
-        this.grid = null; // Reset the grid
-        for (Player player : players) {
-            for (Worker worker : player.getWorkers()) {
-                worker.setPosition(null); // Reset workers' positions
-            }
-        }
-    }
-
     public Player getCurrentPlayer() {
         return this.currentPlayer;
     }
@@ -148,5 +193,18 @@ public class GameController {
     public Player[] getPlayers() {
         return this.players;
     }
+
+    public Grid getGrid() {
+        return this.grid;
+    }
+
+    public List<ResponseMessage> getMessages() {
+        return messages;
+    }
+
+    public void clearMessages() {
+        messages.clear();
+    }
+
 }
 

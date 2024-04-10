@@ -1,7 +1,9 @@
 package homeworksantorini;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Grid {
     public static final int GRID_SIZE = 5;
@@ -10,11 +12,23 @@ public class Grid {
     public Grid() {
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
-                cells[x][y] = new Cell(x, y, this); // Initialize each cell with its coordinates
+                cells[x][y] = new Cell(x, y);
             }
         }
     }
 
+    public List<List<Map<String, Object>>> toSerializableFormat() {
+        List<List<Map<String, Object>>> gridData = new ArrayList<>();
+        for (int i = 0; i < GRID_SIZE; i++) {
+            List<Map<String, Object>> rowData = new ArrayList<>();
+            for (int j = 0; j < GRID_SIZE; j++) {
+                rowData.add(cells[i][j].toSerializableFormat());
+            }
+            gridData.add(rowData);
+        }
+        return gridData;
+    }
+    
     /**
      * Retrieves the cell at the specified coordinates.
      * 
@@ -31,6 +45,25 @@ public class Grid {
             return null;
         }
     }
+
+    public boolean isValidMove(Cell fromCell, Cell toCell) {
+        if (fromCell == null || toCell == null) return false;
+        if (toCell.hasWorker() || toCell.getTower().hasDome()) return false;
+    
+        List<Cell> adjacentCells = getAdjacentCells(fromCell);
+        if (!adjacentCells.contains(toCell)) return false;
+    
+        return Math.abs(toCell.getTowerLevel() - fromCell.getTowerLevel()) <= 1;
+    }
+
+    public boolean isValidBuild(Cell workerCell, Cell targetCell) {
+        if (workerCell == null || targetCell == null) return false;
+        if (targetCell.hasWorker() || targetCell.getTower().hasDome()) return false; // Target cell is occupied or has a dome
+    
+        List<Cell> adjacentCells = getAdjacentCells(workerCell);
+        return adjacentCells.contains(targetCell); // Check if targetCell is in the list of adjacent cells
+    }
+    
     
     /**
      * Retrieves the list of adjacent cells to the specified cell.

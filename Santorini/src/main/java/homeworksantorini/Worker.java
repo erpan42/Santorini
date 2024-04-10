@@ -1,5 +1,8 @@
 package homeworksantorini;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Worker {
     private Cell position;
     private Player owner;
@@ -7,54 +10,52 @@ public class Worker {
 
     public Worker(Player owner) {
         this.owner = owner;
-        this.position = null; // No initial position
+        this.position = null;
         this.isActive = false;
+    }
+
+    public Map<String, Object> toSerializableFormat() {
+        Map<String, Object> workerData = new HashMap<>();
+        workerData.put("x", position != null ? position.getX() : null);
+        workerData.put("y", position != null ? position.getY() : null);
+        workerData.put("ownerId", owner != null ? owner.getId() : null);
+        return workerData;
     }
    
     /**
      * Moves the worker to the specified cell.
      *
-     * @param toCell The target cell to move the worker to.
+     * @param grid   The grid where the worker is moving.
+     * @param toCell The cell where the worker is moving to.
      * @return true if the move is successful, false otherwise.
      */
-    public boolean move(Cell toCell) {
-        // Check if toCell is not null before proceeding with the move
-        if (toCell == null) {
-            System.out.println("Error: The target cell for the move is invalid.");
-            return false; // Move was unsuccessful because the target cell is invalid
-        }
-    
-        if (this.position.isValidMove(this.position, toCell)) {
+    public boolean move(Grid grid, Cell toCell) {
+        if (grid.isValidMove(this.position, toCell)) {
             setPosition(toCell);
             this.isActive = true;
-            return true; // Move was successful
+            return true;
         }
-        return false; // Move was unsuccessful due to other reasons (e.g., target cell is occupied or not adjacent)
+        return false;
     }
-    
+
     /**
-     * Performs a build action on the specified cell.
+     * Builds a tower on the specified cell.
      *
-     * @param onCell The target cell to build on.
+     * @param grid   The grid where the tower is being built.
+     * @param onCell The cell where the tower is being built.
      * @return true if the build is successful, false otherwise.
      */
-    public boolean build(Cell onCell) {
-        // Check if onCell is not null before attempting to build
-        if (onCell == null) {
-            System.out.println("Error: The target cell for building is invalid.");
-            return false; // Building was unsuccessful because the target cell is invalid
-        }
-
-        if (this.position.isValidBuild(this.position, onCell)) {
+    public boolean build(Grid grid, Cell onCell) {
+        if (grid.isValidBuild(this.position, onCell)) {
             if (onCell.getTowerLevel() < Cell.MAX_TOWER_LEVEL) {
                 onCell.getTower().addLevel();
             } else if (!onCell.getTower().hasDome()) {
                 onCell.getTower().addDome();
             }
-            this.isActive = false; // Worker action done
-            return true; // Build was successful
+            this.isActive = false;
+            return true;
         }
-        return false; // Build was unsuccessful
+        return false;
     }
 
     public Cell getPosition() {

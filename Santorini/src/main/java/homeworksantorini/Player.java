@@ -1,7 +1,10 @@
 package homeworksantorini;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Player {
     private List<Worker> workers;
@@ -14,6 +17,16 @@ public class Player {
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this));
         this.workers.add(new Worker(this));
+    }
+
+    public Map<String, Object> toSerializableFormat() {
+        Map<String, Object> playerData = new HashMap<>();
+        playerData.put("id", id); 
+        playerData.put("workers", workers.stream()
+                .map(worker -> worker.toSerializableFormat())
+                .collect(Collectors.toList()));
+        playerData.put("selectedWorker", selectedWorker != null ? selectedWorker.toSerializableFormat() : null);
+        return playerData;
     }
 
     /**
@@ -32,19 +45,20 @@ public class Player {
                 return true;
             }
         }
-        System.out.println("No worker found at the given coordinates.");
+        System.out.println("No worker found at the given coordinates belongs to you.");
         return false;
     }
 
     /**
-     * Moves the specified worker to the target cell.
+     * Moves the specified worker to the specified cell.
      *
-     * @param worker The worker to be moved.
-     * @param toCell The target cell to move the worker to.
+     * @param grid   The grid where the worker is moving.
+     * @param worker The worker performing the move.
+     * @param toCell The cell where the worker is moving to.
      * @return true if the move is successful, false otherwise.
      */
-    public boolean moveWorker(Worker worker, Cell toCell) {
-        if (workers.contains(worker) && worker.move(toCell)) {
+    public boolean moveWorker(Grid grid, Worker worker, Cell toCell) {
+        if (workers.contains(worker) && worker.move(grid, toCell)) {
             System.out.println("Worker moved successfully.");
             return true;
         }
@@ -53,14 +67,15 @@ public class Player {
     }
 
     /**
-     * Performs a build action with the specified worker on the target cell.
+     * Builds with the specified worker on the specified cell.
      *
-     * @param worker The worker to perform the build action.
-     * @param onCell The target cell to build on.
+     * @param grid   The grid where the build is happening.
+     * @param worker The worker performing the build.
+     * @param onCell The cell where the build is happening.
      * @return true if the build is successful, false otherwise.
      */
-    public boolean buildWithWorker(Worker worker, Cell onCell) {
-        if (workers.contains(worker) && worker.hasMoved() && worker.build(onCell)) {
+    public boolean buildWithWorker(Grid grid, Worker worker, Cell onCell) {
+        if (workers.contains(worker) && worker.hasMoved() && worker.build(grid, onCell)) {
             System.out.println("Build successful.");
             return true;
         }
@@ -111,5 +126,14 @@ public class Player {
 
     public Worker getSelectedWorker() {
         return this.selectedWorker;
+    }
+
+    public Worker getUnplacedWorker() {
+        for (Worker worker : workers) {
+            if (worker.getPosition() == null) { // Assuming Worker class has a getPosition method
+                return worker;
+            }
+        }
+        return null; // All workers have been placed
     }
 }
