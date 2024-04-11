@@ -45,48 +45,49 @@ class CellTest {
         assertEquals(worker, initialCell.getWorker());
     }
 
-//     @Test
-//     void testMoveWorkerToNewCell() {
-//         assertTrue(worker.move(targetCell));
-//         assertNull(initialCell.getWorker());
-//         assertEquals(worker, targetCell.getWorker());
-//     }
-
-//     @Test
-//     void testInvalidMoveToOccupiedCell() {
-//         assertFalse(worker.move(occupiedCell)); // Attempt to move to an occupied cell
-//         assertEquals(worker, initialCell.getWorker()); // Worker should remain in the initial cell
-//         assertEquals(anotherWorker, occupiedCell.getWorker()); // Occupied cell should still contain the other worker
-//     }
-
-//     @Test
-//     void testTowerBuilding() {
-//         assertTrue(worker.build(targetCell)); // Worker builds on the target cell
-//         assertEquals(1, targetCell.getTowerLevel()); // Target cell tower level should increase
-//     }
-
-//     @Test
-//     void testDomePlacement() {
-//         for (int i = 0; i < Cell.MAX_TOWER_LEVEL; i++) {
-//             worker.build(targetCell); // Build up to the max level
-//         }
-//         assertEquals(Cell.MAX_TOWER_LEVEL, targetCell.getTowerLevel()); // Verify max level reached
-
-//         assertTrue(worker.build(targetCell)); // Add dome
-//         assertTrue(targetCell.hasDome()); // Verify dome is added
-//     }
-
-//     @Test
-//     void testBuildAfterDome() {
-//         for (int i = 0; i <= Cell.MAX_TOWER_LEVEL; i++) {
-//             worker.build(targetCell); // Build up to and including dome placement
-//         }
-//         assertFalse(worker.build(targetCell)); // Attempt to build after dome should fail
-//     }
-
-//     @Test
-//     void testWorkerRemoval() {
-//         worker.move(targetCell); // Move worker to target cell
-//         assertNull(initialCell.getWorker()); // Initial cell should no longer have the worker
-//     }
+    @Test
+    void testMoveWorkerToNewCell() {
+        assertTrue(worker.move(grid, targetCell));
+        assertNull(initialCell.getWorker());
+        assertEquals(worker, targetCell.getWorker());
+    }
+    
+    @Test
+    void testInvalidMoveToOccupiedCell() {
+        assertFalse(worker.move(grid, occupiedCell)); // Attempt to move to an occupied cell
+        assertEquals(worker, initialCell.getWorker()); // Worker should remain in the initial cell
+        assertEquals(anotherWorker, occupiedCell.getWorker()); // Occupied cell should still contain the other worker
+    }
+    
+    @Test
+    void testTowerBuilding() {
+        assertTrue(worker.build(grid, targetCell)); // Worker builds on the target cell
+        assertEquals(1, targetCell.getTowerLevel()); // Target cell tower level should increase
+    }
+    
+    @Test
+    void testDomePlacement() {
+        for (int i = 0; i < Cell.MAX_TOWER_LEVEL; i++) {
+            worker.build(grid, targetCell); // Build up to the max level
+        }
+        assertEquals(Cell.MAX_TOWER_LEVEL, targetCell.getTowerLevel()); // Verify max level reached
+    
+        assertTrue(worker.build(grid, targetCell)); // Add dome
+        assertTrue(targetCell.hasDome()); // Verify dome is added
+    }
+    
+    @Test
+    void testBuildAfterDome() {
+        for (int i = 0; i <= Cell.MAX_TOWER_LEVEL; i++) {
+            worker.build(grid, targetCell); // Build up to and including dome placement
+        }
+        assertFalse(worker.build(grid, targetCell)); // Attempt to build after dome should fail
+    }
+    
+    @Test
+    void testWorkerRemoval() {
+        worker.move(grid, targetCell); // Move worker to target cell
+        assertNull(initialCell.getWorker()); // Initial cell should no longer have the worker
+    }
+    
 }

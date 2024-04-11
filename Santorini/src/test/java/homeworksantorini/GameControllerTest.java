@@ -2,94 +2,88 @@ package homeworksantorini;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-
-class GameControllerTest {
-    @Mock
-    private Grid grid;
-
-    @Mock
+public class GameControllerTest {
+    private GameController gameController;
     private Player player1;
-
-    @Mock
     private Player player2;
 
-    private GameController gameController;
-
     @BeforeEach
-    void setUp() throws IOException {
-        // Initialize mocks created with the @Mock annotation
-        MockitoAnnotations.openMocks(this);
-
-        // Setup mock behavior
-        // Assuming GameController constructor takes two player names and a grid
-        when(player1.getId()).thenReturn("Player1");
-        when(player2.getId()).thenReturn("Player2");
-        
-        // Setup the gameController with mocked dependencies
-        gameController = new GameController(player1.getId(), player2.getId(), grid);
+    public void setUp() throws Exception {
+        gameController = new GameController("player1", "player2", new Grid());
+        player1 = gameController.getPlayers()[0];
+        player2 = gameController.getPlayers()[1];
     }
 
-    // @Test
-    // void testInitialWorkerPlacement() {
-    //     // Define positions for workers of Player 1 and Player 2
-    //     final int initialPositionXp2 = 3;
-    //     final int initialPositionYp2 = 4;
+    @Test
+    public void testInitialState() {
+        assertEquals(0, gameController.getPlacedWorkers());
+        assertNull(gameController.getWinner());
+        assertEquals(player1, gameController.getCurrentPlayer());
+    }
 
-    //     int[] workerPositionsP1 = {0, 0, 1, 1};
-    //     int[] workerPositionsP2 = {initialPositionXp2, initialPositionXp2, initialPositionYp2, initialPositionYp2};
+    @Test
+    public void testSetInitialWorkerPosition() {
+        gameController.setInitialWorkerPosition(player1, new int[]{0, 0});
+        assertEquals(1, gameController.getPlacedWorkers());
+        assertNotNull(player1.getWorkers().get(0).getPosition());
+        assertEquals(player1, gameController.getCurrentPlayer());
 
-    //     assertTrue(gameController.setInitialWorkerPosition(gameController.getPlayers()[0], new int[]{workerPositionsP1[0], workerPositionsP1[1]}, 
-    //         new int[]{workerPositionsP1[2], workerPositionsP1[initialPositionXp2]}));
-    //     assertTrue(gameController.setInitialWorkerPosition(gameController.getPlayers()[1], new int[]{workerPositionsP2[0], workerPositionsP2[1]}, 
-    //         new int[]{workerPositionsP2[2], workerPositionsP2[initialPositionXp2]}));
+        gameController.setInitialWorkerPosition(player2, new int[]{1, 1});
+        assertEquals(1, gameController.getPlacedWorkers());
+        assertNotNull(player1.getWorkers().get(0).getPosition());
+        assertEquals(player1, gameController.getCurrentPlayer());
+    }
 
-    //     // Verify workers are correctly placed on the grid
-    //     for (Player player : gameController.getPlayers()) {
-    //         for (Worker worker : player.getWorkers()) {
-    //             assertNotNull(worker.getPosition(), "Worker should have a position on the grid");
-    //         }
-    //     }
-    // }
+    @Test
+    public void testInvalidInitialWorkerPosition() {
+        gameController.setInitialWorkerPosition(player1, new int[]{0, 0});
+        gameController.setInitialWorkerPosition(player2, new int[]{0, 0});
+        assertEquals(1, gameController.getPlacedWorkers());
+        assertNull(player2.getWorkers().get(0).getPosition());
+    }
 
-    // @Test
-    // void testChangeTurn() {
-    //     gameController.changeTurn();
-    //     assertEquals("Player2", gameController.getCurrentPlayer().getId(), "After one turn change, it should be Player 2's turn.");
-    // }
+    @Test
+    public void testResetGame() {
+        gameController.setInitialWorkerPosition(player1, new int[]{0, 0});
+        gameController.setInitialWorkerPosition(player2, new int[]{1, 1});
+        gameController.resetGame();
 
-    // @Test
-    // void testCheckGameStatusNoWin() {
-    //     gameController.checkGameStatus();
-    //     assertNotNull(gameController.getCurrentPlayer(), "The game should continue if no player has won.");
-    // }
+        assertEquals(0, gameController.getPlacedWorkers());
+        assertNull(player1.getWorkers().get(0).getPosition());
+        assertNull(player2.getWorkers().get(0).getPosition());
+    }
 
-    // @Test
-    // void testCheckGameStatusWithWin() {
-    //     // Manually set a worker to the winning position
-    //     Worker winningWorker = gameController.getPlayers()[0].getWorkers().get(0);
-    //     Cell winningCell = grid.getCell(0, 0);
-    //     for (int i = 0; i < Cell.MAX_TOWER_LEVEL; i++) {
-    //         winningCell.getTower().addLevel();
-    //     }
-    //     winningWorker.setPosition(winningCell);
+    @Test
+    public void testSelectWorkerForCurrentPlayer() {
+        gameController.setInitialWorkerPosition(player1, new int[]{0, 0});
+        gameController.setInitialWorkerPosition(player2, new int[]{1, 1});
 
-    //     gameController.checkGameStatus();
-    //     assertNull(gameController.getCurrentPlayer(), "Game should end when a player wins.");
-    // }
+        assertTrue(gameController.selectWorkerForCurrentPlayer(0, 0));
+        assertNotNull(player1.getSelectedWorker());
+    }
 
-    // @Test
-    // void testEndGame() {
-    //     gameController.endGame(gameController.getPlayers()[0]);
-    //     assertNull(gameController.getCurrentPlayer(), "After the game ends, there should be no current player.");
-    // }
+    @Test
+    public void testPlayerMove() {
+        gameController.setInitialWorkerPosition(player1, new int[]{0, 0});
+        gameController.setInitialWorkerPosition(player2, new int[]{1, 1});
+        gameController.selectWorkerForCurrentPlayer(0, 0);
+
+        assertTrue(gameController.playerMove(0, 1));    }
+
+    @Test
+    public void testPlayerBuild() {
+        gameController.setInitialWorkerPosition(player1, new int[]{0, 0});
+        gameController.setInitialWorkerPosition(player2, new int[]{1, 1});
+        gameController.selectWorkerForCurrentPlayer(0, 0);
+        gameController.playerMove(0, 1);
+
+        assertTrue(gameController.playerBuild(0, 0));
+        assertEquals(1, gameController.getGrid().getCell(0, 0).getTowerLevel());
+        assertEquals(player2, gameController.getCurrentPlayer());
+    }
 }
