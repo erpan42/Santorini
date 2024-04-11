@@ -45,3 +45,8 @@ button {
   font-size: 16px;
   cursor: pointer;
 }
+
+.button-panel button {
+  margin: 5px 0; /* Adds space between buttons */
+  padding: 10px; /* Makes buttons larger and easier to click */
+}

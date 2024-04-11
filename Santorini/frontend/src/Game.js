@@ -310,6 +310,7 @@ const Game = () => {
         {winner && <h2>Winner: {winner.id}</h2>}
         {errorMessage && <div className="error-message">{errorMessage}</div>}
       </div>
+      <button>Skip Action</button>
       <button onClick={handleNewGame}>New Game</button>
       <Grid grid={grid} onCellClick={handleCellClick} />
       <div className="players">
