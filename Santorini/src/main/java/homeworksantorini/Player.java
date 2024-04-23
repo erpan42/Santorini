@@ -11,12 +11,30 @@ public class Player {
     private String id;
     private static final int WIN_CONDITION_TOWER_LEVEL = 3;
     private Worker selectedWorker;
+    private GodCard godCard;
+    private boolean secondBuildAvailable;
     
     public Player(String id) {
         this.id = id;
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this));
         this.workers.add(new Worker(this));
+    }
+
+    public void setGodCard(GodCard godCard) {
+        this.godCard = godCard;
+    }
+
+    public GodCard getGodCard() {
+        return godCard;
+    }
+
+    public void setSecondBuildAvailable(boolean available) {
+        this.secondBuildAvailable = available;
+    }
+
+    public boolean isSecondBuildAvailable() {
+        return secondBuildAvailable;
     }
 
     /**
@@ -31,6 +49,15 @@ public class Player {
                 .map(worker -> worker.toSerializableFormat())
                 .collect(Collectors.toList()));
         playerData.put("selectedWorker", selectedWorker != null ? selectedWorker.toSerializableFormat() : null);
+        playerData.put("secondBuildAvailable", secondBuildAvailable);
+        
+        // Include the selected god card information
+        if (godCard != null) {
+            playerData.put("godCard", godCard.getClass().getSimpleName());
+        } else {
+            playerData.put("godCard", null);
+        }
+        
         return playerData;
     }
 
@@ -131,6 +158,10 @@ public class Player {
 
     public Worker getSelectedWorker() {
         return this.selectedWorker;
+    }
+
+    public void setSelectedWorker(Worker selectedWorker) {
+        this.selectedWorker = selectedWorker;
     }
 
     /**

@@ -57,7 +57,7 @@ public class Worker {
             } else if (!onCell.getTower().hasDome()) {
                 onCell.getTower().addDome();
             }
-            this.isActive = false;
+            //this.isActive = false;
             return true;
         }
         return false;

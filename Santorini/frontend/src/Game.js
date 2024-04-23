@@ -50,7 +50,21 @@ const Game = () => {
   const [builtWorker, setBuiltWorker] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [godSelectionPhase, setGodSelectionPhase] = useState(true);
+  const [selectedGodCards, setSelectedGodCards] = useState({});
+  const [previousPlayerId, setPreviousPlayerId] = useState(null);
 
+  useEffect(() => {
+    if (currentPlayer) {
+      const currentPlayerId = currentPlayer.id;
+      if (currentPlayerId !== previousPlayerId) {
+        setSelectedWorker(null);
+        setMovedWorker(false);
+        setBuiltWorker(false);
+        setPreviousPlayerId(currentPlayerId);
+      }
+    }
+  }, [currentPlayer]);
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -63,7 +77,7 @@ const Game = () => {
           body: JSON.stringify({ player1Id: 'Player 1', player2Id: 'Player 2' }),
         });
         const data = await response.json();
-        console.log(data.grid); // Verify structure
+        //console.log(data.grid); // Verify structure
         setPlayers(data.players);
         setCurrentPlayer(data.currentPlayer);
         setGrid(data.grid);
@@ -79,6 +93,32 @@ const Game = () => {
     initializeGame();
   }, []);
 
+  const handleGodCardSelection = async (playerId, godCardName) => {
+    try {
+      const response = await fetchWithRetry(`http://localhost:8080/api/game/select-god-card?playerId=${playerId}&godCardName=${godCardName}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setPlayers(data.players);
+      setSelectedGodCards(prevSelectedGodCards => ({
+        ...prevSelectedGodCards,
+        [playerId]: godCardName,
+      }));
+      setErrorMessage('');
+  
+      // Check if both players have selected their god cards
+      if (Object.keys(selectedGodCards).length === 2) {
+        setGodSelectionPhase(false);
+      }
+    } catch (error) {
+      console.error('Error selecting god card:', error);
+      setErrorMessage(`Error selecting god card: ${error.message}`);
+    }
+  };
+
   const handleWorkerSelection = async (row, col) => {
     try {
       const response = await fetchWithRetry(`http://localhost:8080/api/game/select-worker?row=${row}&col=${col}`, {
@@ -91,12 +131,15 @@ const Game = () => {
       setPlayers(data.players);
       setCurrentPlayer(data.currentPlayer);
       setGrid(data.grid);
-      const selectedWorker = currentPlayer.workers.find(worker => worker.x === row && worker.y === col);
-      setSelectedWorker(selectedWorker);
-      setErrorMessage('');
-      // Check for messages in the response and update the state
-      if (data.messages && data.messages.length > 0) {
-        setMessages(data.messages);
+      const selectedWorker = data.currentPlayer.workers.find(worker => worker.x === row && worker.y === col);
+      if (selectedWorker) {
+        setSelectedWorker(selectedWorker);
+        setErrorMessage('');
+        if (data.messages && data.messages.length > 0) {
+          setMessages(data.messages);
+        }
+      } else {
+        console.log('Invalid worker selection');
       }
     } catch (error) {
       console.error('Error selecting worker:', error);
@@ -136,6 +179,7 @@ const Game = () => {
   
   const handleWorkerBuilding = async (row, col) => {
     try {
+      console.log('Handling worker building at:', row, col);
       const response = await fetchWithRetry(`http://localhost:8080/api/game/build?row=${row}&col=${col}`, {
         method: 'POST',
         headers: {
@@ -156,11 +200,15 @@ const Game = () => {
         setMessages(data.messages);
         setBuiltWorker(false);
       } else {
-        setBuiltWorker(false);
-        setSelectedWorker(null);
-        setMovedWorker(false);
+        setBuiltWorker(true);
+        if (!data.currentPlayer.secondBuildAvailable) {
+          console.log('Second build not available');
+          console.log('currentPlayer:', currentPlayer);
+          setSelectedWorker(null);
+          setMovedWorker(false);
+          setBuiltWorker(false);
+        }
       }
-
     } catch (error) {
       console.error('Error building:', error);
       setErrorMessage(`Error building: ${error.message}`);
@@ -175,12 +223,14 @@ const Game = () => {
       await placeWorker(row, col);
       return; // Early return to prevent other actions during placement phase
     }
-  
+    console.log('Selected Worker:', selectedWorker);
     if (!selectedWorker) {
       await handleWorkerSelection(row, col);
     } else if (!movedWorker) {
       await handleWorkerMovement(row, col);
     } else if (!builtWorker) {
+      await handleWorkerBuilding(row, col);
+    } else if (currentPlayer.secondBuildAvailable) {
       await handleWorkerBuilding(row, col);
     }
   };
@@ -214,13 +264,39 @@ const Game = () => {
     }
   };
 
+  const handleSkipSecondBuild = async () => {
+    try {
+        const response = await fetchWithRetry(`http://localhost:8080/api/game/skip-second-build`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                playerId: currentPlayer.id,
+            }),
+        });
+        const data = await response.json();
+        setPlayers(data.players);
+        setCurrentPlayer(data.currentPlayer);
+        setWinner(data.winner);
+        setGrid(data.grid);
+        setErrorMessage('');
+        setBuiltWorker(false);
+        setSelectedWorker(null);
+        setMovedWorker(false);
+    } catch (error) {
+        console.error('Error skipping second build:', error);
+        setErrorMessage(`Error skipping second build: ${error.message}`);
+    }
+  };
+
   const handleNewGame = async () => {
     try {
       const response = await fetchWithRetry('http://localhost:8080/api/game/reset', {
         method: 'POST',
       });
       const data = await response.json();
-      console.log('New game response:', data);
+      //console.log('New game response:', data);
       setPlayers(data.players);
       setCurrentPlayer(data.currentPlayer);
       setGrid(data.grid);
@@ -246,12 +322,47 @@ const Game = () => {
         {winner && <h2>Winner: {winner.id}</h2>}
         {errorMessage && <div className="error-message">{errorMessage}</div>}
       </div>
-      <button>Skip Action</button>
+      {godSelectionPhase && (
+        <div className="god-card-selection">
+          <h2>Select God Cards</h2>
+          {players.map(player => (
+            <div key={player.id}>
+              <h3>{player.id}</h3>
+              {!selectedGodCards[player.id] && (
+                <>
+                  <button onClick={() => handleGodCardSelection(player.id, 'Demeter')}>
+                    Demeter
+                  </button>
+                  <button onClick={() => handleGodCardSelection(player.id, 'Hephaestus')}>
+                    Hephaestus
+                  </button>
+                  <button onClick={() => handleGodCardSelection(player.id, 'Minotaur')}>
+                    Minotaur
+                  </button>
+                  <button onClick={() => handleGodCardSelection(player.id, 'Pan')}>
+                    Pan
+                  </button>
+                  <button onClick={() => handleGodCardSelection(player.id, 'NoGod')}>
+                    No God
+                  </button>
+                </>
+              )}
+              <div>Selected: {selectedGodCards[player.id] || 'None'}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {currentPlayer?.secondBuildAvailable && builtWorker && (
+        <button onClick={handleSkipSecondBuild}>Skip Second Build</button>
+      )}
       <button onClick={handleNewGame}>New Game</button>
       <Grid grid={grid} onCellClick={handleCellClick} />
       <div className="players">
         {players.map((player, index) => (
-          <Player key={index} player={player} />
+          <div key={index}>
+            <Player player={player} />
+            <div>Selected God Card: {player.godCard || 'None'}</div>
+          </div>
         ))}
       </div>
       <MessageDisplay messages={messages} />

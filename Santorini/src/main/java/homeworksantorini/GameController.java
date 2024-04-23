@@ -42,6 +42,11 @@ public class GameController {
         winner = null;
     }
 
+    public void skipSecondBuild() {
+        currentPlayer.getGodCard().resetBuildState();
+        changeTurn();
+    }
+
     /**
      * Sets the winner of the game.
      *
@@ -134,6 +139,10 @@ public class GameController {
     public boolean playerMove(int x, int y) {
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasWorker()) {
+            GodCard godCard = currentPlayer.getGodCard();
+            if (godCard != null && godCard.isSecondBuildAllowed()) {
+                currentPlayer.setSecondBuildAvailable(true);
+            }
             boolean moveSuccessful = currentPlayer.moveWorker(grid, currentPlayer.getSelectedWorker(), targetCell);
             if (moveSuccessful) {
                 checkGameStatus();
@@ -155,15 +164,37 @@ public class GameController {
      * @return true if the build is successful, false otherwise.
      */
     public boolean playerBuild(int x, int y) {
+        System.out.println("Received build request at: (" + x + ", " + y + ")");
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasDome()) {
-            boolean buildSuccessful = currentPlayer.buildWithWorker(grid, currentPlayer.getSelectedWorker(), targetCell);
-            if (buildSuccessful) {
-                checkGameStatus();
-                changeTurn();
-                return buildSuccessful;
+            System.out.println("Selected worker: " + currentPlayer.getSelectedWorker());
+            System.out.println("Target cell: " + targetCell);
+            GodCard godCard = currentPlayer.getGodCard();
+            if (godCard == null || godCard.canBuild(grid, currentPlayer.getSelectedWorker(), targetCell)) {
+                System.out.println("God card allows build");
+                boolean buildSuccessful = currentPlayer.buildWithWorker(grid, currentPlayer.getSelectedWorker(), targetCell);
+                if (buildSuccessful) {
+                    System.out.println("Build successful");
+                    if (godCard != null) {
+                        godCard.afterBuild(grid, currentPlayer.getSelectedWorker(), targetCell);
+                    }
+                    checkGameStatus();
+                    
+                    if (godCard != null && godCard.isSecondBuildAllowed()) {
+                        currentPlayer.setSecondBuildAvailable(true);
+                        System.out.println("Second build available for player: " + currentPlayer.getId());
+                        return buildSuccessful;
+                    }
+                    
+                    currentPlayer.setSelectedWorker(null);
+                    changeTurn();
+                    return buildSuccessful;
+                }
+            } else {
+                System.out.println("God card does not allow build");
             }
-            
+        } else {
+            System.out.println("Invalid build conditions");
         }
         ResponseMessage responseMessage = new ResponseMessage("Invalid build. Please try again.");
         messages.add(responseMessage);
@@ -190,6 +221,11 @@ public class GameController {
     public void changeTurn() {
         // Toggle between players[0] and players[1]
         currentPlayer = (currentPlayer == players[0]) ? players[1] : players[0];
+
+        GodCard godCard = currentPlayer.getGodCard();
+        if (godCard instanceof HephaestusGodCard) {
+            ((HephaestusGodCard) godCard).resetForNewRound();
+        }
     }  
 
     public Player getCurrentPlayer() {

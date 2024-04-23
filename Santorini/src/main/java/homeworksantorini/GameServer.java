@@ -1,6 +1,8 @@
 package homeworksantorini;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,21 @@ public class GameServer extends NanoHTTPD {
         response.addHeader("Access-Control-Allow-Headers", "Content-Type");
         response.addHeader("Access-Control-Max-Age", "600");
         return response;
+    }
+
+    private GodCard createGodCard(String godCardName) {
+        switch (godCardName) {
+            case "Demeter":
+                return new DemeterGodCard();
+            case "Hephaestus":
+                return new HephaestusGodCard();
+            case "Minotaur":
+                //return new MinotaurGodCard();
+            case "Pan":
+                //return new PanGodCard();
+            default:
+                return new NoGodCard();
+        }
     }
 
     @Override
@@ -111,6 +128,32 @@ public class GameServer extends NanoHTTPD {
             gameController.playerBuild(row, col);
         } else if (uri.equals("/api/game/reset") && session.getMethod().equals(Method.POST)) {
             gameController.resetGame();
+        } else if (uri.equals("/api/game/skip-second-build") && session.getMethod().equals(Method.POST)) {
+            gameController.skipSecondBuild();
+        } else if (uri.equals("/api/game/select-god-card") && session.getMethod().equals(Method.POST)) {
+            try {
+              String playerId = session.getParameters().get("playerId").get(0);
+              String godCardName = session.getParameters().get("godCardName").get(0);
+          
+              System.out.println("Received god card selection: " + playerId + ", " + godCardName);
+          
+              Player player = Arrays.stream(gameController.getPlayers())
+                .filter(p -> p.getId().equals(playerId))
+                .findFirst()
+                .orElse(null);
+          
+              if (player != null) {
+                GodCard godCard = createGodCard(godCardName);
+                player.setGodCard(godCard);
+                System.out.println("Set god card for player: " + player.getId() + ", God card: " + godCard.getClass().getSimpleName());
+              } else {
+                System.out.println("Player not found: " + playerId);
+                return createResponse(Response.Status.BAD_REQUEST, "application/json", "{\"error\": \"Player not found\"}");
+              }
+            } catch (Exception e) {
+              e.printStackTrace();
+              return createResponse(Response.Status.BAD_REQUEST, "application/json", "{\"error\": \"Invalid request\"}");
+            }
         }
     
         // Prepare the response data
@@ -123,8 +166,8 @@ public class GameServer extends NanoHTTPD {
         responseData.put("winner", gameController.getWinner() != null ? gameController.getWinner().toSerializableFormat() : null);
         responseData.put("numPlacedWorkers", gameController.getPlacedWorkers());
         responseData.put("messages", gameController.getMessages().stream()
-        .map(ResponseMessage::getMessage)
-        .collect(Collectors.toList()));
+            .map(ResponseMessage::getMessage)
+            .collect(Collectors.toList()));
         gameController.clearMessages();
 
 

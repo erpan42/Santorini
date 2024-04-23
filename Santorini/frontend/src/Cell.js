@@ -3,7 +3,7 @@ import React from 'react';
 const Cell = ({ cell, onCellClick, row, col }) => {
     // Check if cell is not null before destructuring
     if (!cell) {
-      console.log(`Cell (${row}, ${col}) is null`);
+      // console.log(`Cell (${row}, ${col}) is null`);
       return (
         <button className="cell" onClick={onCellClick}>
           &nbsp;
@@ -15,9 +15,9 @@ const Cell = ({ cell, onCellClick, row, col }) => {
     const towerLevel = cell.towerLevel || 0;
     const workerPresent = cell.worker != null;
   
-    console.log(`Cell (${row}, ${col}):`, cell);
-    console.log(`Tower Level: ${towerLevel}`);
-    console.log(`Worker Present: ${workerPresent}`);
+    // console.log(`Cell (${row}, ${col}):`, cell);
+    // console.log(`Tower Level: ${towerLevel}`);
+    // console.log(`Worker Present: ${workerPresent}`);
   
     let content = '';
   
@@ -37,7 +37,7 @@ const Cell = ({ cell, onCellClick, row, col }) => {
       content = workerId;
     }
   
-    console.log(`Rendered Content for (${row}, ${col}):`, content);
+    // console.log(`Rendered Content for (${row}, ${col}):`, content);
   
     return (
       <button className="cell" onClick={() => onCellClick(row, col)}>
