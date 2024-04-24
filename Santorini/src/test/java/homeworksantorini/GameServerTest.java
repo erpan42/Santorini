@@ -29,6 +29,32 @@ public class GameServerTest {
     }
 
     @Test
+    public void testSelectGodCard() throws IOException {
+        String playerId = gameController.getPlayers()[0].getId();
+        Map<String, List<String>> parameters = new HashMap<>();
+        parameters.put("playerId", List.of(playerId));
+        parameters.put("godCardName", List.of("Demeter"));
+        IHTTPSession session = createMockSession("/api/game/select-god-card", NanoHTTPD.Method.POST, parameters);
+    
+        Response response = gameServer.serve(session);
+        assertEquals(NanoHTTPD.Response.Status.OK, response.getStatus());
+        assertEquals("application/json", response.getMimeType());
+    }
+
+    @Test
+    public void testSkipSecondBuild() throws IOException {
+        // Set up the game state where the current player has a second build available
+        Player currentPlayer = gameController.getCurrentPlayer();
+        currentPlayer.setGodCard(new DemeterGodCard());
+        currentPlayer.setSecondBuildAvailable(true);
+    
+        IHTTPSession session = createMockSession("/api/game/skip-second-build", NanoHTTPD.Method.POST, new HashMap<>());
+        Response response = gameServer.serve(session);
+        assertEquals(NanoHTTPD.Response.Status.OK, response.getStatus());
+        assertEquals("application/json", response.getMimeType());
+    }
+
+    @Test
     public void testStartGame() throws IOException {
         Map<String, List<String>> parameters = new HashMap<>();
         parameters.put("player1Id", List.of("Player 1"));
