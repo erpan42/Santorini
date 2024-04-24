@@ -55,16 +55,38 @@ public class Grid {
      * 
      * @param fromCell The cell where the worker is moving from.
      * @param toCell   The cell where the worker is moving to.
+     * @param isMinotaurMove true if the move is a Minotaur move, false otherwise.
      * @return true if the move is valid, false otherwise.
      */
-    public boolean isValidMove(Cell fromCell, Cell toCell) {
+    public boolean isValidMove(Cell fromCell, Cell toCell, boolean isMinotaurMove) {
         if (fromCell == null || toCell == null) return false;
-        if (toCell.hasWorker() || toCell.getTower().hasDome()) return false;
+        if (toCell.getTower().hasDome()) return false;
     
         List<Cell> adjacentCells = getAdjacentCells(fromCell);
         if (!adjacentCells.contains(toCell)) return false;
     
-        return Math.abs(toCell.getTowerLevel() - fromCell.getTowerLevel()) <= 1;
+        int levelDifference = toCell.getTowerLevel() - fromCell.getTowerLevel();
+        if (!isMinotaurMove) {
+            return !toCell.hasWorker() && levelDifference <= 1;
+        } else {
+            if (toCell.hasWorker()) {
+                Cell behindCell = getCellBehind(fromCell, toCell);
+                return behindCell != null && !behindCell.hasWorker() && !behindCell.getTower().hasDome();
+            } else {
+                return levelDifference <= 1;
+            }
+        }
+    }
+
+    public Cell getCellBehind(Cell fromCell, Cell toCell) {
+        int dx = toCell.getX() - fromCell.getX();
+        int dy = toCell.getY() - fromCell.getY();
+        int behindX = toCell.getX() + dx;
+        int behindY = toCell.getY() + dy;
+        if (behindX >= 0 && behindX < Grid.GRID_SIZE && behindY >= 0 && behindY < Grid.GRID_SIZE) {
+            return getCell(behindX, behindY);
+        }
+        return null;
     }
 
     /**

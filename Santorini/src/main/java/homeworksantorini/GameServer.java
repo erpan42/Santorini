@@ -64,9 +64,9 @@ public class GameServer extends NanoHTTPD {
             case "Hephaestus":
                 return new HephaestusGodCard();
             case "Minotaur":
-                //return new MinotaurGodCard();
+                return new MinotaurGodCard();
             case "Pan":
-                //return new PanGodCard();
+                return new PanGodCard();
             default:
                 return new NoGodCard();
         }

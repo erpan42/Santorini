@@ -1,8 +1,20 @@
 package homeworksantorini;
 
-public class NoGodCard implements GodCard {
+import java.util.HashMap;
+import java.util.Map;
+
+public class PanGodCard implements GodCard {
+    private Map<Worker, Integer> initialWorkerLevels;
+
+    public PanGodCard() {
+        initialWorkerLevels = new HashMap<>();
+    }
+
     @Override
     public boolean canMove(Grid grid, Worker worker, Cell targetCell) {
+        if (!initialWorkerLevels.containsKey(worker)) {
+            initialWorkerLevels.put(worker, worker.getPosition().getTowerLevel());
+        }
         return true;
     }
 
@@ -38,7 +50,11 @@ public class NoGodCard implements GodCard {
 
     @Override
     public boolean checkWinCondition(Worker worker) {
-        return false;
+        int currentTowerLevel = worker.getPosition().getTowerLevel();
+        int initialTowerLevel = worker.getInitialTowerLevel();
+        System.out.println("Pan checkWinCondition - Current Tower Level: " + currentTowerLevel);
+        System.out.println("Pan checkWinCondition - Initial Tower Level: " + initialTowerLevel);
+        return initialTowerLevel - currentTowerLevel >= 2;
     }
 
     @Override

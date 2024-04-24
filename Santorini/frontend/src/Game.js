@@ -179,7 +179,6 @@ const Game = () => {
   
   const handleWorkerBuilding = async (row, col) => {
     try {
-      console.log('Handling worker building at:', row, col);
       const response = await fetchWithRetry(`http://localhost:8080/api/game/build?row=${row}&col=${col}`, {
         method: 'POST',
         headers: {
@@ -190,20 +189,19 @@ const Game = () => {
         }),
       });
       const data = await response.json();
+      console.log('Build response data:', data);
       setPlayers(data.players);
       setCurrentPlayer(data.currentPlayer);
       setWinner(data.winner);
       setGrid(data.grid);
       setErrorMessage('');
-      // Check for messages in the response and update the state
+      
       if (data.messages && data.messages.length > 0) {
+        console.log('Messages:', data.messages);
         setMessages(data.messages);
-        setBuiltWorker(false);
       } else {
         setBuiltWorker(true);
         if (!data.currentPlayer.secondBuildAvailable) {
-          console.log('Second build not available');
-          console.log('currentPlayer:', currentPlayer);
           setSelectedWorker(null);
           setMovedWorker(false);
           setBuiltWorker(false);
@@ -266,27 +264,27 @@ const Game = () => {
 
   const handleSkipSecondBuild = async () => {
     try {
-        const response = await fetchWithRetry(`http://localhost:8080/api/game/skip-second-build`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                playerId: currentPlayer.id,
-            }),
-        });
-        const data = await response.json();
-        setPlayers(data.players);
-        setCurrentPlayer(data.currentPlayer);
-        setWinner(data.winner);
-        setGrid(data.grid);
-        setErrorMessage('');
-        setBuiltWorker(false);
-        setSelectedWorker(null);
-        setMovedWorker(false);
+      const response = await fetchWithRetry(`http://localhost:8080/api/game/skip-second-build`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerId: currentPlayer.id,
+        }),
+      });
+      const data = await response.json();
+      setPlayers(data.players);
+      setCurrentPlayer(data.currentPlayer);
+      setWinner(data.winner);
+      setGrid(data.grid);
+      setErrorMessage('');
+      setBuiltWorker(true); // Set builtWorker to true when skipping the second build
+      setSelectedWorker(null);
+      setMovedWorker(false);
     } catch (error) {
-        console.error('Error skipping second build:', error);
-        setErrorMessage(`Error skipping second build: ${error.message}`);
+      console.error('Error skipping second build:', error);
+      setErrorMessage(`Error skipping second build: ${error.message}`);
     }
   };
 
@@ -296,7 +294,7 @@ const Game = () => {
         method: 'POST',
       });
       const data = await response.json();
-      //console.log('New game response:', data);
+      console.log('New game response:', data);
       setPlayers(data.players);
       setCurrentPlayer(data.currentPlayer);
       setGrid(data.grid);
@@ -308,6 +306,8 @@ const Game = () => {
       setMovedWorker(false);
       setMessages([]);
       setErrorMessage('');
+      setSelectedGodCards({}); // Reset the selected god cards
+      setGodSelectionPhase(true); // Show the god selection buttons
     } catch (error) {
       console.error('Error resetting the game:', error);
       setErrorMessage(`Error starting the game: ${error.message}`);

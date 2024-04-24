@@ -7,11 +7,17 @@ public class Worker {
     private Cell position;
     private Player owner;
     private boolean isActive;
+    private int initialTowerLevel;
 
     public Worker(Player owner) {
         this.owner = owner;
         this.position = null;
         this.isActive = false;
+    }
+
+    public int getInitialTowerLevel() {
+        System.out.println("Worker getInitialTowerLevel - Initial Tower Level: " + initialTowerLevel);
+        return initialTowerLevel;
     }
 
     /**
@@ -32,10 +38,24 @@ public class Worker {
      *
      * @param grid   The grid where the worker is moving.
      * @param toCell The cell where the worker is moving to.
+     * @param godCard The god card of the player who owns the worker.
      * @return true if the move is successful, false otherwise.
      */
-    public boolean move(Grid grid, Cell toCell) {
-        if (grid.isValidMove(this.position, toCell)) {
+    public boolean move(Grid grid, Cell toCell, GodCard godCard) {
+        boolean isSpecialMove = godCard.isSpecialMove(grid, this, toCell);
+        if (grid.isValidMove(this.position, toCell, isSpecialMove)) {
+            // Store the initial tower level before moving the worker
+            initialTowerLevel = this.position.getTowerLevel();
+            System.out.println("Worker move - Initial Tower Level: " + initialTowerLevel);
+    
+            if (isSpecialMove && toCell.hasWorker()) {
+                Worker opponentWorker = toCell.getWorker();
+                Cell behindCell = grid.getCellBehind(this.position, toCell);
+                if (behindCell != null) {
+                    opponentWorker.setPosition(behindCell);
+                    opponentWorker.setMoved(false);
+                }
+            }
             setPosition(toCell);
             this.isActive = true;
             return true;
@@ -48,16 +68,17 @@ public class Worker {
      *
      * @param grid   The grid where the tower is being built.
      * @param onCell The cell where the tower is being built.
+     * @param godCard The god card of the player who owns the worker.
      * @return true if the build is successful, false otherwise.
      */
-    public boolean build(Grid grid, Cell onCell) {
+    public boolean build(Grid grid, Cell onCell, GodCard godCard) {
         if (grid.isValidBuild(this.position, onCell)) {
             if (onCell.getTowerLevel() < Cell.MAX_TOWER_LEVEL) {
                 onCell.getTower().addLevel();
             } else if (!onCell.getTower().hasDome()) {
                 onCell.getTower().addDome();
             }
-            //this.isActive = false;
+            this.isActive = godCard.isMoveLocked();
             return true;
         }
         return false;
@@ -83,6 +104,8 @@ public class Worker {
         // Assign this worker to the new position's cell, if the new position is not null
         if (newPosition != null) {
             newPosition.setWorker(this);
+            System.out.println("Worker setPosition - New Position: (" + newPosition.getX() + ", " +
+             newPosition.getY() + "), Tower Level: " + newPosition.getTowerLevel());
         }
     }
 

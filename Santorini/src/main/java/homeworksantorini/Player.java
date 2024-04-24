@@ -90,7 +90,7 @@ public class Player {
      * @return true if the move is successful, false otherwise.
      */
     public boolean moveWorker(Grid grid, Worker worker, Cell toCell) {
-        if (workers.contains(worker) && worker.move(grid, toCell)) {
+        if (workers.contains(worker) && worker.move(grid, toCell, godCard)) {
             System.out.println("Worker moved successfully.");
             return true;
         }
@@ -107,7 +107,7 @@ public class Player {
      * @return true if the build is successful, false otherwise.
      */
     public boolean buildWithWorker(Grid grid, Worker worker, Cell onCell) {
-        if (workers.contains(worker) && worker.hasMoved() && worker.build(grid, onCell)) {
+        if (workers.contains(worker) && worker.hasMoved() && worker.build(grid, onCell, godCard)) {
             System.out.println("Build successful.");
             return true;
         }
@@ -122,12 +122,14 @@ public class Player {
      */
     public boolean checkWinCondition() {
         for (Worker worker : this.workers) {
-            // Check if the position is not null before accessing its methods
-            if (worker.getPosition() != null && worker.getPosition().getTowerLevel() == WIN_CONDITION_TOWER_LEVEL) {
-                return true; // Win condition is met
+            if (worker.getPosition() != null) {
+                int currentTowerLevel = worker.getPosition().getTowerLevel();
+                if ((currentTowerLevel == WIN_CONDITION_TOWER_LEVEL && worker.hasMoved()) || godCard.checkWinCondition(worker)) {
+                    return true;
+                }
             }
         }
-        return false; // No worker meets the win condition
+        return false;
     }
 
     public List<Worker> getWorkers() {

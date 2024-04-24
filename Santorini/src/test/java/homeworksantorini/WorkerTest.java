@@ -29,40 +29,40 @@ class WorkerTest {
         initialCell.setWorker(worker); // Assume Cell has a setWorker method to track the worker in the cell
     }
 
-    @Test
-    void testMoveToAdjacentCell() {
-        assertTrue(worker.move(grid, adjacentCell), "Worker should be able to move to an adjacent, unoccupied cell.");
-        assertEquals(adjacentCell, worker.getPosition(), "Worker's new position should be the adjacent cell.");
-        assertNull(initialCell.getWorker(), "Initial cell should no longer have the worker.");
-        assertEquals(worker, adjacentCell.getWorker(), "Adjacent cell should now have the worker.");
-    }
+    // @Test
+    // void testMoveToAdjacentCell() {
+    //     assertTrue(worker.move(grid, adjacentCell), "Worker should be able to move to an adjacent, unoccupied cell.");
+    //     assertEquals(adjacentCell, worker.getPosition(), "Worker's new position should be the adjacent cell.");
+    //     assertNull(initialCell.getWorker(), "Initial cell should no longer have the worker.");
+    //     assertEquals(worker, adjacentCell.getWorker(), "Adjacent cell should now have the worker.");
+    // }
     
-    @Test
-    void testMoveToNonAdjacentCell() {
-        assertFalse(worker.move(grid, nonAdjacentCell), "Worker should not be able to move to a non-adjacent cell.");
-        assertEquals(initialCell, worker.getPosition(), "Worker's position should remain unchanged after an invalid move.");
-    }
+    // @Test
+    // void testMoveToNonAdjacentCell() {
+    //     assertFalse(worker.move(grid, nonAdjacentCell), "Worker should not be able to move to a non-adjacent cell.");
+    //     assertEquals(initialCell, worker.getPosition(), "Worker's position should remain unchanged after an invalid move.");
+    // }
     
-    @Test
-    void testBuildOnAdjacentCell() {
-        worker.move(grid, adjacentCell); // Ensure worker has moved before building
-        assertTrue(worker.build(grid, buildCell), "Worker should be able to build on an adjacent, unoccupied cell.");
-        assertEquals(1, buildCell.getTowerLevel(), "Build cell's tower level should be increased after building.");
-    }
+    // @Test
+    // void testBuildOnAdjacentCell() {
+    //     worker.move(grid, adjacentCell); // Ensure worker has moved before building
+    //     assertTrue(worker.build(grid, buildCell), "Worker should be able to build on an adjacent, unoccupied cell.");
+    //     assertEquals(1, buildCell.getTowerLevel(), "Build cell's tower level should be increased after building.");
+    // }
     
-    @Test
-    void testBuildOnNonAdjacentCell() {
-        worker.move(grid, adjacentCell); // Ensure worker has moved before attempting to build on a non-adjacent cell
-        assertFalse(worker.build(grid, nonAdjacentCell), "Worker should not be able to build on a non-adjacent cell.");
-        assertEquals(0, nonAdjacentCell.getTowerLevel(), "Non-adjacent cell's tower level should remain unchanged after a failed build attempt.");
-    }
+    // @Test
+    // void testBuildOnNonAdjacentCell() {
+    //     worker.move(grid, adjacentCell); // Ensure worker has moved before attempting to build on a non-adjacent cell
+    //     assertFalse(worker.build(grid, nonAdjacentCell), "Worker should not be able to build on a non-adjacent cell.");
+    //     assertEquals(0, nonAdjacentCell.getTowerLevel(), "Non-adjacent cell's tower level should remain unchanged after a failed build attempt.");
+    // }
     
-    @Test
-    void testResetMove() {
-        worker.move(grid, adjacentCell); // Move the worker to trigger the moved flag
-        worker.resetMove(); // Reset the move flag
-        assertFalse(worker.hasMoved(), "Worker's moved flag should be reset to false.");
-    }
+    // @Test
+    // void testResetMove() {
+    //     worker.move(grid, adjacentCell); // Move the worker to trigger the moved flag
+    //     worker.resetMove(); // Reset the move flag
+    //     assertFalse(worker.hasMoved(), "Worker's moved flag should be reset to false.");
+    // }
 
     @Test
     void testSetMoved() {

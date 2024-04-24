@@ -49,4 +49,19 @@ public class DemeterGodCard implements GodCard {
     public void resetBuildState() {
         firstBuildCell = null;
     }
+    
+    @Override
+    public boolean checkWinCondition(Worker worker) {
+        return false;
+    }
+
+    @Override
+    public boolean isSpecialMove(Grid grid, Worker worker, Cell targetCell) {
+        return false;
+    }
+
+    @Override
+    public boolean isMoveLocked() {
+        return true;
+    }
 }

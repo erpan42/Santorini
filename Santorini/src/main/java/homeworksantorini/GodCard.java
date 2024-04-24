@@ -8,4 +8,7 @@ public interface GodCard {
     void afterBuild(Grid grid, Worker worker, Cell targetCell);
     boolean hasBuiltOnce();
     void resetBuildState();
+    boolean checkWinCondition(Worker worker);
+    boolean isSpecialMove(Grid grid, Worker worker, Cell targetCell);
+    boolean isMoveLocked();
 }

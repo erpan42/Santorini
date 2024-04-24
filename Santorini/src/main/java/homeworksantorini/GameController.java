@@ -36,6 +36,7 @@ public class GameController {
             for (Worker worker : player.getWorkers()) {
                 worker.setPosition(null);
             }
+            player.setGodCard(null); // Reset the selected god card for each player
         }
         placedWorkers = 0;
         currentPlayer = players[0];
@@ -138,17 +139,18 @@ public class GameController {
      */
     public boolean playerMove(int x, int y) {
         Cell targetCell = grid.getCell(x, y);
-        if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasWorker()) {
-            GodCard godCard = currentPlayer.getGodCard();
-            if (godCard != null && godCard.isSecondBuildAllowed()) {
-                currentPlayer.setSecondBuildAvailable(true);
-            }
+        if (currentPlayer.getSelectedWorker() != null && targetCell != null) {
             boolean moveSuccessful = currentPlayer.moveWorker(grid, currentPlayer.getSelectedWorker(), targetCell);
+            System.out.println("Player move - Selected Worker: " + currentPlayer.getSelectedWorker());
+            System.out.println("Player move - Target Cell: " + targetCell);
             if (moveSuccessful) {
+                GodCard godCard = currentPlayer.getGodCard();
+                if (godCard != null) {
+                    godCard.afterMove(grid, currentPlayer.getSelectedWorker(), targetCell);
+                }
                 checkGameStatus();
                 return moveSuccessful;
             }
-            
         }
         ResponseMessage responseMessage = new ResponseMessage("Invalid move. Please try again.");
         messages.add(responseMessage);
@@ -207,6 +209,7 @@ public class GameController {
      * If a player has won, the game is ended by calling the endGame() method.
      */
     public void checkGameStatus() {
+        System.out.println("Checking game status");
         for (Player player : players) {
             if (player.checkWinCondition()) {
                 setWinner(player);

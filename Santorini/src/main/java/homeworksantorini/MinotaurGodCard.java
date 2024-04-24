@@ -1,9 +1,9 @@
 package homeworksantorini;
 
-public class NoGodCard implements GodCard {
+public class MinotaurGodCard implements GodCard {
     @Override
     public boolean canMove(Grid grid, Worker worker, Cell targetCell) {
-        return true;
+        return grid.isValidMove(worker.getPosition(), targetCell, true);
     }
 
     @Override
@@ -43,11 +43,11 @@ public class NoGodCard implements GodCard {
 
     @Override
     public boolean isSpecialMove(Grid grid, Worker worker, Cell targetCell) {
-        return false;
+        return targetCell.hasWorker();
     }
 
     @Override
     public boolean isMoveLocked() {
-        return true;
+        return false;
     }
 }
