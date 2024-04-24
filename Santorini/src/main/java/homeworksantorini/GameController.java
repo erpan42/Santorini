@@ -226,8 +226,8 @@ public class GameController {
         currentPlayer = (currentPlayer == players[0]) ? players[1] : players[0];
 
         GodCard godCard = currentPlayer.getGodCard();
-        if (godCard instanceof HephaestusGodCard) {
-            ((HephaestusGodCard) godCard).resetForNewRound();
+        if (godCard != null) {
+            godCard.resetBuildState();
         }
     }  
 
