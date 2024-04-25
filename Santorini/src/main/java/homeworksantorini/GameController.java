@@ -169,8 +169,8 @@ public class GameController {
         System.out.println("Received build request at: (" + x + ", " + y + ")");
         Cell targetCell = grid.getCell(x, y);
         if (currentPlayer.getSelectedWorker() != null && targetCell != null && !targetCell.hasDome()) {
-            System.out.println("Selected worker: " + currentPlayer.getSelectedWorker());
-            System.out.println("Target cell: " + targetCell);
+            // System.out.println("Selected worker: " + currentPlayer.getSelectedWorker());
+            // System.out.println("Target cell: " + targetCell);
             GodCard godCard = currentPlayer.getGodCard();
             if (godCard == null || godCard.canBuild(grid, currentPlayer.getSelectedWorker(), targetCell)) {
                 System.out.println("God card allows build");
