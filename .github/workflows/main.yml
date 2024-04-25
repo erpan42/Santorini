@@ -56,5 +56,5 @@ jobs:
       # Install dependencies for frontend
       - name: Install dependencies for frontend
         run: |
-          cd Santorini/frontend
+          cd frontend
           timeout 2m npm install
