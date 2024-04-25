@@ -12,6 +12,7 @@ public class DemeterGodCard implements GodCard {
         return true;
     }
 
+    // Demeter can build twice, but not on the same cell
     @Override
     public boolean canBuild(Grid grid, Worker worker, Cell targetCell) {
         if (firstBuildCell == null) {
@@ -26,6 +27,7 @@ public class DemeterGodCard implements GodCard {
         // No additional behavior
     }
 
+    // Demeter can build twice, but not on the same cell
     @Override
     public void afterBuild(Grid grid, Worker worker, Cell targetCell) {
         if (firstBuildCell == null) {

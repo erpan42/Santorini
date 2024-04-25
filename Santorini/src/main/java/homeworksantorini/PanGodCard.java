@@ -48,6 +48,7 @@ public class PanGodCard implements GodCard {
         // No build state to reset
     }
 
+    // Pan wins if he moves down two or more levels
     @Override
     public boolean checkWinCondition(Worker worker) {
         int currentTowerLevel = worker.getPosition().getTowerLevel();

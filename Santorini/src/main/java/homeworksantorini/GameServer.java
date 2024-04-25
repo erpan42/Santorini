@@ -1,8 +1,6 @@
 package homeworksantorini;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +55,12 @@ public class GameServer extends NanoHTTPD {
         return response;
     }
 
+    /**
+     * Creates a GodCard instance based on the specified god card name.
+     *
+     * @param godCardName The name of the god card to create.
+     * @return The GodCard instance based on the specified god card name.
+     */
     private GodCard createGodCard(String godCardName) {
         switch (godCardName) {
             case "Demeter":

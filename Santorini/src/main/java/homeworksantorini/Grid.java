@@ -78,6 +78,13 @@ public class Grid {
         }
     }
 
+    /**
+     * Retrieves the cell behind the specified cell.
+     * 
+     * @param fromCell The cell where the worker is moving from.
+     * @param toCell   The cell where the worker is moving to.
+     * @return The cell behind the specified cell, or null if the cell is out of bounds.
+     */
     public Cell getCellBehind(Cell fromCell, Cell toCell) {
         int dx = toCell.getX() - fromCell.getX();
         int dy = toCell.getY() - fromCell.getY();

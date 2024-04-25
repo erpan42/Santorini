@@ -43,6 +43,9 @@ public class GameController {
         winner = null;
     }
 
+    /**
+     * Skips the second build action for the current player.
+     */
     public void skipSecondBuild() {
         currentPlayer.getGodCard().resetBuildState();
         changeTurn();

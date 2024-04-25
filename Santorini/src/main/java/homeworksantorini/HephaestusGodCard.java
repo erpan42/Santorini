@@ -14,6 +14,7 @@ public class HephaestusGodCard implements GodCard {
         return true;
     }
 
+    // Hephaestus can build twice, but the second build must be on the same cell
     @Override
     public boolean canBuild(Grid grid, Worker worker, Cell targetCell) {
         if (hasBuiltOnce) {
@@ -36,6 +37,7 @@ public class HephaestusGodCard implements GodCard {
         // No additional behavior
     }
 
+    // Hephaestus can build twice, but the second build must be on the same cell
     @Override
     public void afterBuild(Grid grid, Worker worker, Cell targetCell) {
         if (!hasBuiltOnce) {

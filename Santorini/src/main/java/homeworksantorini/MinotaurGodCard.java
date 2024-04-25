@@ -41,6 +41,7 @@ public class MinotaurGodCard implements GodCard {
         return false;
     }
 
+    // Minotaur can move into an opponent worker's cell and force the opponent worker to move to an adjacent cell
     @Override
     public boolean isSpecialMove(Grid grid, Worker worker, Cell targetCell) {
         return targetCell.hasWorker();
